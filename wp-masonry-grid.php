@@ -12,7 +12,7 @@
  * Author:            Leandro Gonçavlves <contato.leandrogoncalves@gmail.com>
  * Author URI:        https://github.com/leandrogoncalves/wp-masonry-grid
  * License:           MIT
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * License URI:       https://opensource.org/licenses/MIT
  * Text Domain:       wp-masonry-grid
  * Domain Path:       /languages
  */
