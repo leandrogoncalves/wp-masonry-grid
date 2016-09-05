@@ -32,7 +32,7 @@ class WP_Masonry_Grid_Shortcode {
 	public function __construct() {
 
 		// Register shortcode
-		add_shortcode( 'isotope', array( $this, 'shortcode_isotope' ) );
+		add_shortcode( 'wpmg', array( $this, 'wpmg_isotope' ) );
 
 	}
 
@@ -45,7 +45,7 @@ class WP_Masonry_Grid_Shortcode {
 	 *
 	 * @param    array $atts Shortcode attributes
 	 */
-	public function shortcode_isotope( $atts ) {
+	public function wpmg_isotope( $atts ) {
 
         extract( shortcode_atts( array(
             'id'        => '',
@@ -149,17 +149,7 @@ class WP_Masonry_Grid_Shortcode {
                     }
                 }
 
-                if( file_exists( get_stylesheet_directory() . '/wanna-isotope/loop.php' ) ) {
-        
-                    // Load from child theme
-                    load_template( get_stylesheet_directory() . '/wanna-isotope/loop.php', false );
-
-                } elseif( file_exists( get_template_directory() . '/wanna-isotope/loop.php' ) ) {
-        
-                    // Load from parent theme
-                    load_template( get_template_directory() . '/wanna-isotope/loop.php', false );
-
-                } else {
+                if( file_exists( plugin_dir_path(__FILE__) . 'templates/loop.php' ) ) {
                     
                     // Load from plugin
                     include( plugin_dir_path(__FILE__) . 'templates/loop.php' );
@@ -169,39 +159,6 @@ class WP_Masonry_Grid_Shortcode {
             endwhile; ?>
             </ul> 
 
-            <script type="text/javascript">
-                jQuery(document).ready(function($) {
-
-                    var $container = $('#<?php echo esc_js( $id ); ?>');
-                    $container.imagesLoaded( function(){
-                        $container.isotope({
-                          itemSelector: ".isotope-item",
-                          layoutMode: "masonry"
-                        });
-                    });
-
-                    var $optionSets = $('#filters-<?php echo esc_attr( $id ); ?>'),
-                    $optionLinks = $optionSets.find('a');
-                 
-                    $optionLinks.click(function(){
-                        var $this = $(this);
-                        // don\'t proceed if already active
-                        if ( $this.hasClass('active') ) {
-                          return false;
-                        }
-                        var $optionSet = $this.parents('#filters-<?php echo esc_js( $id ); ?>');
-                        $optionSets.find('.active').removeClass('active');
-                        $this.addClass('active');
-                     
-                        //When an item is clicked, sort the items.
-                        var selector = $(this).attr('data-filter');
-                        $container.isotope({ filter: selector });
-
-                        return false;
-                    });
-                });
-            </script>
-
             <?php
             return ob_get_clean();
 
@@ -210,5 +167,43 @@ class WP_Masonry_Grid_Shortcode {
         wp_reset_query();
 
 	}
+
+    private function getJavascript(){
+     ?>
+        <script type="text/javascript">
+            jQuery(document).ready(function($) {
+
+                var $container = $('#<?php echo esc_js( $id ); ?>');
+                $container.imagesLoaded( function(){
+                    $container.isotope({
+                        itemSelector: ".isotope-item",
+                        layoutMode: "masonry"
+                    });
+                });
+
+                var $optionSets = $('#filters-<?php echo esc_attr( $id ); ?>'),
+                    $optionLinks = $optionSets.find('a');
+
+                $optionLinks.click(function(){
+                    var $this = $(this);
+                    // don\'t proceed if already active
+                    if ( $this.hasClass('active') ) {
+                        return false;
+                    }
+                    var $optionSet = $this.parents('#filters-<?php echo esc_js( $id ); ?>');
+                    $optionSets.find('.active').removeClass('active');
+                    $this.addClass('active');
+
+                    //When an item is clicked, sort the items.
+                    var selector = $(this).attr('data-filter');
+                    $container.isotope({ filter: selector });
+
+                    return false;
+                });
+            });
+        </script>
+
+        <?php
+    }
 
 }

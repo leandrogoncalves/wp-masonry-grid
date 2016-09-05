@@ -18,7 +18,7 @@
  */
 
 if ( ! defined( 'WPINC' ) ) {
-	die;
+	die('WP precisa ser inicializado');
 }
 
 

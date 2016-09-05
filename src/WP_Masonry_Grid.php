@@ -73,9 +73,9 @@ class WP_Masonry_Grid {
 
 		$this->load_dependencies();
 		$this->set_locale();
-		$this->define_admin_hooks();
+//		$this->define_admin_hooks();
 		$this->define_public_hooks();
-		//$this->register_shortcodes();
+//		$this->register_shortcodes();
 
 	}
 
@@ -170,7 +170,7 @@ class WP_Masonry_Grid {
 		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+//		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 	}
 
@@ -181,8 +181,9 @@ class WP_Masonry_Grid {
 	 * @access   private
 	 */
 	private function register_shortcodes() {
+		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'init', $plugin_public, 'register_isotope_shortcode' );
+		$this->loader->add_action( 'init', $plugin_public, 'register_wpmg_shortcode' );
 	}
 
 	/**

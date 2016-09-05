@@ -73,7 +73,10 @@ class WP_Masonry_Grid_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wanna-isotope.css', array(), $this->version, 'all' );
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-masonry-grid.css',
+						  array(), $this->version,
+						  'all'
+		);
 
 	}
 
@@ -96,8 +99,14 @@ class WP_Masonry_Grid_Public {
 		 * class.
 		 */
 
-		wp_enqueue_script( $this->plugin_name . 'isotope', plugin_dir_url( __FILE__ ) . 'js/isotope.pkgd.min.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( $this->plugin_name . 'imagesloaded', plugin_dir_url( __FILE__ ) . 'js/imagesloaded.pkgd.min.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name . 'isotope', plugin_dir_url( __FILE__ ) . 'js/isotope.pkgd.min.js',
+						   array( 'jquery' ),
+						   $this->version, false
+		);
+		wp_enqueue_script( $this->plugin_name . 'imagesloaded', plugin_dir_url( __FILE__ ) . 'js/imagesloaded.pkgd.min.js',
+						   array( 'jquery' ),
+						   $this->version, false
+		);
 
 	}
 
