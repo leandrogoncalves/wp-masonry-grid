@@ -115,6 +115,12 @@ class WP_Masonry_Grid {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'src/WP_Masonry_Grid_i18n.php';
 
 		/**
+		 * Load class responsible for instance of shortcode of plugin
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ )  ) . 'src/WP_Masonry_Grid_Shortcode.php';
+
+		
+		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
 //		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/WP_Masonry_Grid_Admin.php';
@@ -125,10 +131,6 @@ class WP_Masonry_Grid {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/WP_Masonry_Grid_Public.php';
 
-		/**
-		 * Load class responsible for instance of shortcode of plugin
-		 */
-		require_once plugin_dir_path( __FILE__ ) . 'public/WP_Masonry_Grid_Shortcode.php';
 
 		$this->loader = new WP_Masonry_Grid_Loader();
 
