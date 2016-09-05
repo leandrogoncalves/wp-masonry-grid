@@ -32,7 +32,7 @@ class WP_Masonry_Grid_Shortcode {
 	public function __construct() {
 
 		// Register shortcode
-		add_shortcode( 'wpmg', array( $this, 'wpmg_isotope' ) );
+		add_shortcode( 'wpmg', array( $this, 'wpmg_shortcode' ) );
 
 	}
 
@@ -45,7 +45,7 @@ class WP_Masonry_Grid_Shortcode {
 	 *
 	 * @param    array $atts Shortcode attributes
 	 */
-	public function wpmg_isotope( $atts ) {
+	public function wpmg_shortcode( $atts ) {
 
         extract( shortcode_atts( array(
             'id'        => '',
