@@ -27,9 +27,6 @@ if ( ! defined( 'WPINC' ) ) {
  * admin-specific hooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'src/WP_Masonry_Grid.php';
-require plugin_dir_path( __FILE__ ) . 'public/WP_Masonry_Grid_Shortcode.php';
-
 
 $plugin = new WP_Masonry_Grid();
-$shortcode = new WP_Masonry_Grid_Shortcode();
 $plugin->run();

@@ -58,6 +58,11 @@ class WP_Masonry_Grid {
 	protected $version;
 
 	/**
+	 * @var
+	 */
+	protected $shortcode;
+
+	/**
 	 * Define the core functionality of the plugin.
 	 *
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
@@ -75,7 +80,7 @@ class WP_Masonry_Grid {
 		$this->set_locale();
 //		$this->define_admin_hooks();
 		$this->define_public_hooks();
-//		$this->register_shortcodes();
+		$this->register_shortcodes();
 
 	}
 
@@ -112,13 +117,18 @@ class WP_Masonry_Grid {
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/WP_Masonry_Grid_Admin.php';
+//		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/WP_Masonry_Grid_Admin.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/WP_Masonry_Grid_Public.php';
+
+		/**
+		 * Load class responsible for instance of shortcode of plugin
+		 */
+		require_once plugin_dir_path( __FILE__ ) . 'public/WP_Masonry_Grid_Shortcode.php';
 
 		$this->loader = new WP_Masonry_Grid_Loader();
 
@@ -181,9 +191,10 @@ class WP_Masonry_Grid {
 	 * @access   private
 	 */
 	private function register_shortcodes() {
-		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
+//		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
+//		$this->loader->add_action( 'init', $plugin_public, 'register_wpmg_shortcode' );
 
-		$this->loader->add_action( 'init', $plugin_public, 'register_wpmg_shortcode' );
+		$this->shortcode = new WP_Masonry_Grid_Shortcode();
 	}
 
 	/**
