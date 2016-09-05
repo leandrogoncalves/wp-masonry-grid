@@ -1,0 +1,14 @@
+{
+  "name": "leandrogoncalves/wp-masonry-grid",
+  "description": "This wordpress plugin display posts and pages like masonry grid",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Leandro",
+      "email": "leandro@lesolution.com.br"
+    }
+  ],
+  "require": {
+    "php": ">=5.3"
+  }
+}
