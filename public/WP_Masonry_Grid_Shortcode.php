@@ -11,7 +11,7 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	die;
+    die;
 }
 
 /**
@@ -24,156 +24,228 @@ if ( ! defined( 'WPINC' ) ) {
  */
 class WP_Masonry_Grid_Shortcode {
 
-	/**
-	 * Add shortcode
-	 *
-	 * @since    1.0.0
-	 */
-	public function __construct() {
 
-		// Register shortcode
-		add_shortcode( 'wpmg', array( $this, 'wpmg_shortcode' ) );
+    /**
+     * array de variáveis
+     * @var array
+     */
+    private $vars = array();
 
-	}
 
-	/**
-	 * Isotope output
-	 *
-	 * Retrieves a media files and settings to display a video.
-	 *
-	 * @since    1.0.0
-	 *
-	 * @param    array $atts Shortcode attributes
-	 */
-	public function wpmg_shortcode( $atts ) {
+    /**
+     * Add shortcode
+     *
+     * @since    1.0.0
+     */
+    public function __construct() {
 
-        extract( shortcode_atts( array(
-            'id'        => '',
-            'class'     => '',
-            'type'      => 'post',
-            'items'     => 4,
-            'order'     => '',
-            'order_by'  => 'menu_order',
-            'tax'       => '',
-            'term'      => '',
-        ), $atts) );
+        // Register shortcode
+        add_shortcode( 'wpmg', array( $this, 'wpmg_shortcode' ) );
 
-        if( null == $id ) {
-	       $id = 'wpmg' . md5( date( 'jnYgis' ) );
-	    }
+    }
 
-        if( null == $term ) {
+    /**
+     * seta uma variavel passando o nome e o valor para o um vetor associativo
+     * @param string $name  nome da variável
+     * @param string $value valor
+     */
+    public function set($name, $value='')
+    {
+        $this->vars[$name] = $value;
+        return $this;
+    }
+
+    /**
+     * retorna o valor da variável chamada por $name
+     * @param  string $name nome da variavel
+     * @return mixed       	valor da variavel
+     */
+    public function __get($name)
+    {
+
+        if(!isset($this->vars[$name])) $this->set($name);
+
+        return  $this->vars[$name];
+
+    }
+
+
+    /**
+     * REder
+     * @param $templateNmae
+     */
+    private function render($templateNmae){
+        $file =  plugin_dir_path(__FILE__) . 'templates/'.$templateNmae.'.phtml' ;
+
+        if( file_exists( $file )) {
+            include( $file );
+        }
+
+    }
+
+
+
+    /**
+     * Isotope output
+     *
+     * Retrieves a media files and settings to display a video.
+     *
+     * @since    1.0.0
+     *
+     * @param    array $atts Shortcode attributes
+     */
+    public function wpmg_shortcode( $attributes ) {
+
+        $atts = shortcode_atts( array(
+                                    'id'        => '',
+                                    'class'     => '',
+                                    'type'      => 'post',
+                                    'items'     => 4,
+                                    'order'     => '',
+                                    'order_by'  => 'menu_order',
+                                    'tax'       => '',
+                                    'term'      => '',
+                                ), $attributes);
+
+        foreach ($atts as $k => $att) $this->{$k} = $att;
+
+        if( null == $this->id ) {
+            $this->id = 'wpmg' . md5( date( 'jnYgis' ) );
+        }
+
+        if( null == $this->term ) {
             $query_args = array(
-                'post_type'       => $type,
-                'order'           => $order,
-                'orderby'         => $order_by,
-                'posts_per_page'  => $items
+                'post_type'       => $this->type,
+                'order'           => $this->order,
+                'orderby'         => $this->order_by,
+                'posts_per_page'  => $this->items
             );
         } else {
             $query_args = array(
-                'post_type'       => $type,
-                'order'           => $order,
-                'orderby'         => $order_by,
-                'posts_per_page'  => $items,
+                'post_type'       => $this->type,
+                'order'           => $this->order,
+                'orderby'         => $this->order_by,
+                'posts_per_page'  => $this->items,
                 'tax_query' => array(
                     array(
-                        'taxonomy' => $tax,
+                        'taxonomy' => $this->tax,
                         'field'    => 'slug',
-                        'terms'    => $term,
+                        'terms'    => $this->term,
                     ),
                 ),
             );
         }
-        $isotope_loop = new WP_Query ( $query_args );
-        
-        if ( $isotope_loop->have_posts() ) :
-            ob_start(); ?>
 
-            <ul id="filters-<?php echo esc_attr( $id ); ?>" class="filters">
+        $this->loop = new WP_Query ( $query_args );
 
-                <li>
-                    <a href="javascript:void(0)" title="filter all" data-filter=".all" class="active">
-                        <?php esc_html_e( 'All', 'wp-mansory-grid' ); ?>
-                    </a>
-                </li>
+        ob_start();
+
+        if ( $this->loop->have_posts() ) {
+
+            $this->getIsotopeMode();
+
+        }else{
+            ?>
+            <p>Nenhum resultado encontrado</p>
+            <?php
+        }
+
+        return ob_get_clean();
+
+        wp_reset_query();
+
+    }
+
+
+    /**
+     * Mansory mode
+     * @param $atts
+     * @param $the_loop
+     */
+    private function getMansoryMode($atts, $the_loop){
+
+
+    }
+
+
+
+    /**
+     * Isotope mode
+     * @param $atts
+     * @param $the_loop
+     */
+    private function getIsotopeMode(){
+
+        ?>
+        <ul id="filters-<?php echo esc_attr(  $this->id ); ?>" class="filters">
+
+            <li>
+                <a href="javascript:void(0)" title="filter all" data-filter=".all" class="active">
+                    <?php esc_html_e( 'All', 'wp-mansory-grid' ); ?>
+                </a>
+            </li>
 
             <?php
-            if( null != $tax && null == $term ) {
+            if( null !=  $this->tax && null ==  $this->term ) {
 
-                $terms = get_terms( $tax );
-                $count = count($terms); 
-
-                if ( $count > 0 ){
-                    foreach ( $terms as $term ) {
-                        $termname = strtolower($term->slug); 
-                        $title = $term->name; ?>
-                        <li>
-                            <a href="javascript:void(0)" title="filter <?php echo esc_attr( $title ); ?>" data-filter=".<?php echo esc_attr( $termname ); ?>">
-                                <?php echo esc_html( $title ); ?>
-                            </a>
-                        </li><?php
-                    }
-                } 
-
-            } elseif ( null != $term ) {
-
-                $term_id = get_term_by( 'slug', $term, $tax );
-                $terms = get_term_children( $term_id->term_id, $tax );
+                $terms = get_terms(  $this->tax );
                 $count = count($terms);
 
                 if ( $count > 0 ){
                     foreach ( $terms as $term ) {
-                        $single_term = get_term( $term, $tax );
+                        $termname = strtolower($term->slug);
+                        $title = $term->name; ?>
+                        <li>
+                        <a href="javascript:void(0)" title="filter <?php echo esc_attr( $title ); ?>" data-filter=".<?php echo esc_attr( $termname ); ?>">
+                            <?php echo esc_html( $title ); ?>
+                        </a>
+                        </li><?php
+                    }
+                }
+
+            } elseif ( null !=  $this->term ) {
+
+                $term_id = get_term_by( 'slug',  $this->term,  $this->tax );
+                $terms = get_term_children( $term_id->term_id,  $this->tax );
+                $count = count($terms);
+
+                if ( $count > 0 ){
+                    foreach ( $terms as $term ) {
+                        $single_term = get_term( $term,  $this->tax );
                         $termslug = strtolower($single_term->slug);
                         $termname = strtolower($single_term->name); ?>
                         <li>
-                            <a href="javascript:void(0)" title="filter <?php echo esc_attr( $termslug ); ?>" data-filter=".<?php echo esc_attr( $termslug ); ?>">
-                                <?php echo esc_html( $termname ); ?>
-                            </a>
+                        <a href="javascript:void(0)" title="filter <?php echo esc_attr( $termslug ); ?>" data-filter=".<?php echo esc_attr( $termslug ); ?>">
+                            <?php echo esc_html( $termname ); ?>
+                        </a>
                         </li><?php
                     }
                 }
 
             } ?>
-            </ul>
+        </ul>
 
-            <ul id="<?php echo esc_attr( $id ); ?>" class="isotope-content isotope">
+        <ul id="<?php echo esc_attr( $this->id); ?>" class="isotope-content isotope">
             <?php
-            while ( $isotope_loop->have_posts() ) : $isotope_loop->the_post();
+            while ( $this->loop->have_posts() ) : $this->loop->the_post();
 
-                if( null != $tax ) {
-                    $tax_terms = get_the_terms( $isotope_loop->ID, $tax );
-                    $term_class = '';
+                if( null != $this->tax ) {
+                    $tax_terms = get_the_terms( $this->loop->ID, $this->tax );
+                    $this->term_class = '';
                     foreach( (array)$tax_terms as $term ) {
-                        $term_class .= $term->slug . ' '; 
+                        $this->term_class .= $term->slug . ' ';
                     }
                 }
 
-                if( file_exists( plugin_dir_path(__FILE__) . 'templates/loop.php' ) ) {
-                    
-                    // Load from plugin
-                    include( plugin_dir_path(__FILE__) . 'templates/loop.php' );
-
-                }
+                $this->render('loop_isotope');
 
             endwhile; ?>
-            </ul> 
+        </ul>
 
-            <?php
-            return ob_get_clean();
-
-        endif;
-
-        wp_reset_query();
-
-	}
-
-    private function getJavascript(){
-     ?>
         <script type="text/javascript">
             jQuery(document).ready(function($) {
 
-                var $container = $('#<?php echo esc_js( $id ); ?>');
+                var $container = $('#<?php echo esc_js( $this->id); ?>');
                 $container.imagesLoaded( function(){
                     $container.isotope({
                         itemSelector: ".isotope-item",
@@ -181,7 +253,7 @@ class WP_Masonry_Grid_Shortcode {
                     });
                 });
 
-                var $optionSets = $('#filters-<?php echo esc_attr( $id ); ?>'),
+                var $optionSets = $('#filters-<?php echo esc_attr( $this->id ); ?>'),
                     $optionLinks = $optionSets.find('a');
 
                 $optionLinks.click(function(){
@@ -190,7 +262,7 @@ class WP_Masonry_Grid_Shortcode {
                     if ( $this.hasClass('active') ) {
                         return false;
                     }
-                    var $optionSet = $this.parents('#filters-<?php echo esc_js( $id ); ?>');
+                    var $optionSet = $this.parents('#filters-<?php echo esc_js( $this->id ); ?>');
                     $optionSets.find('.active').removeClass('active');
                     $this.addClass('active');
 
@@ -205,5 +277,6 @@ class WP_Masonry_Grid_Shortcode {
 
         <?php
     }
+
 
 }
