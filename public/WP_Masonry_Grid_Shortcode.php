@@ -59,7 +59,7 @@ class WP_Masonry_Grid_Shortcode {
         ), $atts) );
 
         if( null == $id ) {
-	       $id = 'wanna' . md5( date( 'jnYgis' ) );
+	       $id = 'wpmg' . md5( date( 'jnYgis' ) );
 	    }
 
         if( null == $term ) {
@@ -93,7 +93,7 @@ class WP_Masonry_Grid_Shortcode {
 
                 <li>
                     <a href="javascript:void(0)" title="filter all" data-filter=".all" class="active">
-                        <?php esc_html_e( 'All', 'wanna-isotope' ); ?>
+                        <?php esc_html_e( 'All', 'wp-mansory-grid' ); ?>
                     </a>
                 </li>
 
