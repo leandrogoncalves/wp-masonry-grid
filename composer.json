@@ -1,6 +1,6 @@
 {
   "name": "leandrogoncalves/wp-masonry-grid",
-  "description": "This wordpress plugin display posts and pages like masonry grid",
+  "description": "A plugin to easily build Masonry grid Layouts with any content.",
   "license": "MIT",
   "authors": [
     {
@@ -14,7 +14,7 @@
     "composer/installers": "v1.0.6"
   },
   "dist": {
-    "url": "git@bitbucket.org:ahhacreative/ahha_plugin_wpdbmigratepro.git",
+    "url": "https://github.com/leandrogoncalves/wp-masonry-grid.git",
     "type": "git"
   }
 }

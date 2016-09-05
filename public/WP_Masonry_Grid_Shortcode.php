@@ -1,6 +1,6 @@
 <?php
 /**
- * The [isotope] shortcode of the plugin.
+ * The [wpmg] shortcode of the plugin.
  *
  * @link       https://github.com/leandrogoncalves/wp-masonry-grid
  * @since      1.0.0
