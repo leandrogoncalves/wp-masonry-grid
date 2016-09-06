@@ -77,8 +77,10 @@ class WP_Masonry_Grid_Shortcode {
     private function render($templateNmae){
         $file =  plugin_dir_path(__FILE__) . 'templates/'.$templateNmae.'.phtml' ;
 
-        if( file_exists( $file )) {
+        if( file_exists( $file ) ) {
             include( $file );
+        }else{
+            echo 'Template não encontrado em ' . $file;
         }
 
     }
@@ -142,7 +144,7 @@ class WP_Masonry_Grid_Shortcode {
 
         if ( $this->loop->have_posts() ) {
 
-            $this->getIsotopeMode();
+            $this->getMansoryMode();
 
         }else{
             ?>
@@ -162,7 +164,7 @@ class WP_Masonry_Grid_Shortcode {
      * @param $atts
      * @param $the_loop
      */
-    private function getMansoryMode($atts, $the_loop){
+    private function getMansoryMode(){
         
         ?>
         <article class="masonry-wrapper">
