@@ -195,8 +195,13 @@ class WP_Masonry_Grid_Shortcode {
             <?php
             while ( $this->loop->have_posts() ) : $this->loop->the_post();
 
+                $this->ID = get_the_ID();
+                $this->title = get_the_title();
+                $this->permalink = get_the_permalink();
+
+
                 if( null != $this->tax ) {
-                    $tax_terms = get_the_terms(48, $this->tax );
+                    $tax_terms = get_the_terms($this->ID, $this->tax );
 
                     $this->seguimentos = [];
                     if(!empty($tax_terms)){
@@ -208,9 +213,6 @@ class WP_Masonry_Grid_Shortcode {
 
                 }
 
-                $this->ID = get_the_ID();
-                $this->title = get_the_title();
-                $this->permalink = get_the_permalink();
 
                 if($this->acf) $this->setACFCustomFields($this->acf, $this->ID);
 
