@@ -86,6 +86,25 @@ class WP_Masonry_Grid_Shortcode {
     }
 
 
+    private function setACFCustomFields($fieldNames, $id){
+
+        if(function_exists('get_field')){
+            $acfFiels = [];
+            if(is_array($fieldNames)){
+                foreach ($fieldNames as $field) {
+                    $acfFiels[$field]  =  get_field($field, $id);
+                }
+            }else{
+                $acfFiels = array($fieldNames => get_field($fieldNames, $id));
+            }
+            $this->customFields = array ($id => $acfFiels);
+
+        }else{
+            wp_die('O plugin Advanced Custom Fields é necessario');
+        }
+    }
+
+
 
     /**
      * Isotope output
@@ -107,6 +126,7 @@ class WP_Masonry_Grid_Shortcode {
                                     'order_by'  => 'menu_order',
                                     'tax'       => '',
                                     'term'      => '',
+                                    'acf'       => '',
                                 ), $attributes);
 
         foreach ($atts as $k => $att) $this->{$k} = $att;
@@ -114,6 +134,8 @@ class WP_Masonry_Grid_Shortcode {
         if( null == $this->id ) {
             $this->id = 'wpmg' . md5( date( 'jnYgis' ) );
         }
+
+        $this->acf = explode(',',$this->acf);
 
         if( null == $this->term ) {
             $query_args = array(
@@ -137,6 +159,8 @@ class WP_Masonry_Grid_Shortcode {
                 ),
             );
         }
+
+        $this->site_url = get_site_url();
 
         $this->loop = new WP_Query ( $query_args );
 
@@ -177,12 +201,18 @@ class WP_Masonry_Grid_Shortcode {
                     $this->seguimentos = [];
                     if(!empty($tax_terms)){
                         foreach ($tax_terms as  $tx){
-                            $this->seguimentos[] = $tx->name;
+                            $this->seguimentos[] = "<a href='?wpmg_tax={$tx->slug}'>{$tx->name}</a>";
                         }
                     }
                     $this->seguimentos = implode(' | ',  $this->seguimentos);
 
                 }
+
+                $this->ID = get_the_ID();
+                $this->title = get_the_title();
+                $this->permalink = get_the_permalink();
+
+                if($this->acf) $this->setACFCustomFields($this->acf, $this->ID);
 
                 $this->render('loop_masonry');
 
