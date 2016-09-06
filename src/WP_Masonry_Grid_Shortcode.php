@@ -163,7 +163,12 @@ class WP_Masonry_Grid_Shortcode {
      * @param $the_loop
      */
     private function getMansoryMode($atts, $the_loop){
-
+        
+        ?>
+        <article class="masonry-wrapper">
+            <?php $this->render('loop_masonry') ?>
+        </article>
+        <?php
 
     }
 

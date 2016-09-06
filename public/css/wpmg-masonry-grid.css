@@ -1,0 +1,20 @@
+
+*, *:before, *:after {box-sizing:  border-box !important;}
+
+
+article.masonry-wrapper {
+    -moz-column-width: 13em;
+    -webkit-column-width: 13em;
+    -moz-column-gap: 0.5em;
+    -webkit-column-gap: 0.5em;
+
+}
+
+section.masonry-item {
+    display: inline-block;
+    margin:  0.15rem;
+    padding:  1rem;
+    width:  100%;
+    background:  #efefef;
+}
+
