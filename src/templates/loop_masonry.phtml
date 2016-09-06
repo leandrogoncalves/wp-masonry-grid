@@ -1,7 +1,7 @@
 <section  class="masonry-item">
-    <?php if( has_post_thumbnail( the_title() ) ) : ?>
+    <?php if( has_post_thumbnail( the_ID() ) ) : ?>
         <a href="<?php the_permalink(); ?>" title="<?php the_title(); ?>">
-            <?php the_post_thumbnail( the_title(), 'medium' ); ?>
+            <?php the_post_thumbnail( the_ID(), 'medium' ); ?>
         </a>
     <?php endif; ?>
     <h3><?php the_title(); ?></h3>
