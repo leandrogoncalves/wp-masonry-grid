@@ -73,7 +73,7 @@ class WP_Masonry_Grid_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-masonry-grid.css',
+		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpmg-masonry-grid.css',
 						  array(), $this->version,
 						  'all'
 		);

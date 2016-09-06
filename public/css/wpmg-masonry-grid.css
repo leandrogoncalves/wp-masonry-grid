@@ -3,10 +3,14 @@
 
 
 article.masonry-wrapper {
-    -moz-column-width: 13em;
-    -webkit-column-width: 13em;
+    -moz-column-width: 15em;
+    -webkit-column-width: 15em;
+    -ms-column-width: 15em;
+    -o-column-width: 15em;
     -moz-column-gap: 0.5em;
     -webkit-column-gap: 0.5em;
+    -ms-column-gap: 0.5em;
+    -o-column-gap: 0.5em;
 
 }
 
