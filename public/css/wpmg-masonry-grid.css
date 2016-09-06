@@ -3,21 +3,21 @@
 
 
 article.masonry-wrapper {
-    -moz-column-width: 15em;
-    -webkit-column-width: 15em;
-    -ms-column-width: 15em;
-    -o-column-width: 15em;
-    -moz-column-gap: 0.5em;
-    -webkit-column-gap: 0.5em;
-    -ms-column-gap: 0.5em;
-    -o-column-gap: 0.5em;
+    -moz-column-width: 14em;
+    -webkit-column-width: 14em;
+    -ms-column-width: 14em;
+    -o-column-width: 14em;
+    -moz-column-gap: 1em;
+    -webkit-column-gap: 1em;
+    -ms-column-gap: 1em;
+    -o-column-gap: 1em;
 
 }
 
 section.masonry-item {
     display: inline-block;
-    margin:  0.15rem;
-    padding:  1rem;
+    margin-bottom:  0.8rem;
+    /*padding:  1rem;*/
     width:  100%;
     background:  #efefef;
 }

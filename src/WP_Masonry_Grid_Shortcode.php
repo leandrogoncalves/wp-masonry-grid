@@ -102,7 +102,7 @@ class WP_Masonry_Grid_Shortcode {
                                     'id'        => '',
                                     'class'     => '',
                                     'type'      => 'post',
-                                    'items'     => 4,
+                                    'per_page'  => 10,
                                     'order'     => '',
                                     'order_by'  => 'menu_order',
                                     'tax'       => '',
@@ -120,14 +120,14 @@ class WP_Masonry_Grid_Shortcode {
                 'post_type'       => $this->type,
                 'order'           => $this->order,
                 'orderby'         => $this->order_by,
-                'posts_per_page'  => $this->items
+                'posts_per_page'  => $this->per_page
             );
         } else {
             $query_args = array(
                 'post_type'       => $this->type,
                 'order'           => $this->order,
                 'orderby'         => $this->order_by,
-                'posts_per_page'  => $this->items,
+                'posts_per_page'  => $this->per_page,
                 'tax_query' => array(
                     array(
                         'taxonomy' => $this->tax,
@@ -165,10 +165,30 @@ class WP_Masonry_Grid_Shortcode {
      * @param $the_loop
      */
     private function getMansoryMode(){
-        
+
         ?>
         <article class="masonry-wrapper">
-            <?php $this->render('loop_masonry') ?>
+            <?php
+            while ( $this->loop->have_posts() ) : $this->loop->the_post();
+
+                if( null != $this->tax ) {
+                    $tax_terms = get_the_terms(48, $this->tax );
+
+                    $this->seguimentos = [];
+                    if(!empty($tax_terms)){
+                        foreach ($tax_terms as  $tx){
+                            $this->seguimentos[] = $tx->name;
+                        }
+                    }
+                    $this->seguimentos = implode(' | ',  $this->seguimentos);
+
+                }
+
+                $this->render('loop_masonry');
+
+
+            endwhile;
+            ?>
         </article>
         <?php
 
