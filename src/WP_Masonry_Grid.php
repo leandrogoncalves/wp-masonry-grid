@@ -118,7 +118,7 @@ abstract class WP_Masonry_Grid {
 
 
 	/**
-	 * REder
+	 * Rendering views
 	 * @param $templateNmae
 	 */
 	protected function render($templateNmae){
@@ -143,15 +143,8 @@ abstract class WP_Masonry_Grid {
 		$this->where = [];
 		global $wpdb;
 
+		$inputs = WP_Masonry_Grid_Static::getInput();
 
-		$args = array(
-			'wpmg'   => [
-				'filter' => FILTER_SANITIZE_STRING,
-				'flags'  => FILTER_REQUIRE_ARRAY
-			]
-		);
-
-		$inputs = filter_input_array(INPUT_POST, $args);
 
 		$query_args = [
 			'post_type'       => $this->type,
@@ -221,9 +214,14 @@ abstract class WP_Masonry_Grid {
 		require_once $this->plugin_path  . 'src/WP_Masonry_Grid_i18n.php';
 
 		/***
-		 * Class reponiable for wp query implements
+		 * Class reponsiable for wp query implements
 		 */
 		require_once $this->plugin_path  . 'src/WP_Masonry_Grid_Query.php';
+
+		/***
+		 * Class reponiable for query string POST or GET
+		 */
+		require_once $this->plugin_path  . 'public/WP_Masonry_Grid_Static.php';
 
 
 		/**
