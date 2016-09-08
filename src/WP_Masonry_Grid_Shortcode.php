@@ -14,6 +14,9 @@ if ( ! defined( 'WPINC' ) ) {
     die;
 }
 
+
+require_once 'WP_Masonry_Grid.php';
+
 /**
  * WP_Masonry_Grid Shortcode Class
  *
@@ -22,14 +25,8 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * @since 1.0.0
  */
-class WP_Masonry_Grid_Shortcode {
+class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
-
-    /**
-     * array de variáveis
-     * @var array
-     */
-    private $vars = array();
 
 
     /**
@@ -38,54 +35,19 @@ class WP_Masonry_Grid_Shortcode {
      * @since    1.0.0
      */
     public function __construct() {
-
+        parent::__construct();
         // Register shortcode
         add_shortcode( 'wpmg', array( $this, 'wpmg_shortcode' ) );
 
     }
 
-    /**
-     * seta uma variavel passando o nome e o valor para o um vetor associativo
-     * @param string $name  nome da variável
-     * @param string $value valor
-     */
-    public function set($name, $value='')
-    {
-        $this->vars[$name] = $value;
-        return $this;
-    }
+  
 
     /**
-     * retorna o valor da variável chamada por $name
-     * @param  string $name nome da variavel
-     * @return mixed       	valor da variavel
+     * Get a custom post from ACF plugin
+     * @param $fieldNames
+     * @param $id
      */
-    public function __get($name)
-    {
-
-        if(!isset($this->vars[$name])) $this->set($name);
-
-        return  $this->vars[$name];
-
-    }
-
-
-    /**
-     * REder
-     * @param $templateNmae
-     */
-    private function render($templateNmae){
-        $file =  plugin_dir_path(__FILE__) . 'templates/'.$templateNmae.'.phtml' ;
-
-        if( file_exists( $file ) ) {
-            include( $file );
-        }else{
-            echo 'Template não encontrado em ' . $file;
-        }
-
-    }
-
-
     private function setACFCustomFields($fieldNames, $id){
 
         if(function_exists('get_field')){
@@ -121,12 +83,13 @@ class WP_Masonry_Grid_Shortcode {
                                     'id'        => '',
                                     'class'     => '',
                                     'type'      => 'post',
-                                    'per_page'  => 10,
-                                    'order'     => '',
-                                    'order_by'  => 'menu_order',
+                                    'per_page'  => '',
+                                    'order'     => 'ASC',
+                                    'order_by'  => 'post_title',
                                     'tax'       => '',
                                     'term'      => '',
                                     'acf'       => '',
+                                    'paged'     => '',
                                 ), $attributes);
 
         foreach ($atts as $k => $att) $this->{$k} = $att;
@@ -135,34 +98,14 @@ class WP_Masonry_Grid_Shortcode {
             $this->id = 'wpmg' . md5( date( 'jnYgis' ) );
         }
 
-        $this->acf = explode(',',$this->acf);
+        $this->paged = TRUE == empty($this->paged) ? 1 : $this->paged;
+        $this->per_page = TRUE == empty($this->per_page) ? -1 : $this->paged;
 
-        if( null == $this->term ) {
-            $query_args = array(
-                'post_type'       => $this->type,
-                'order'           => $this->order,
-                'orderby'         => $this->order_by,
-                'posts_per_page'  => $this->per_page
-            );
-        } else {
-            $query_args = array(
-                'post_type'       => $this->type,
-                'order'           => $this->order,
-                'orderby'         => $this->order_by,
-                'posts_per_page'  => $this->per_page,
-                'tax_query' => array(
-                    array(
-                        'taxonomy' => $this->tax,
-                        'field'    => 'slug',
-                        'terms'    => $this->term,
-                    ),
-                ),
-            );
-        }
+        $this->acf = explode(',',$this->acf);
 
         $this->site_url = get_site_url();
 
-        $this->loop = new WP_Query ( $query_args );
+        $this->loop = new WP_Query ( $this->getArgs() );
 
         ob_start();
 

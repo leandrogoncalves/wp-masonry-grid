@@ -27,7 +27,7 @@
  * @subpackage WP_Masonry_Grid/includes
  * @author     leandrogoncalves <contato.leandrogoncalves@gmail.com>
  */
-class WP_Masonry_Grid {
+abstract class WP_Masonry_Grid {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -57,10 +57,12 @@ class WP_Masonry_Grid {
 	 */
 	protected $version;
 
-	/**
-	 * @var
-	 */
-	protected $shortcode;
+    /**
+     * array de variáveis
+     *
+     * @var array
+     */
+    protected $vars = [];
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -71,7 +73,7 @@ class WP_Masonry_Grid {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+	protected function __construct() {
 
 		$this->plugin_name = 'wp-masonry-grid';
 		$this->version = '1.0.0';
@@ -80,8 +82,90 @@ class WP_Masonry_Grid {
 		$this->set_locale();
 //		$this->define_admin_hooks();
 		$this->define_public_hooks();
-		$this->register_shortcodes();
 
+	}
+
+
+	/**
+	 * seta uma variavel passando o nome e o valor para o um vetor associativo
+	 * @param string $name  nome da variável
+	 * @param string $value valor
+	 */
+	protected function set($name, $value='')
+	{
+		$this->vars[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * retorna o valor da variável chamada por $name
+	 * @param  string $name nome da variavel
+	 * @return mixed       	valor da variavel
+	 */
+	public function __get($name)
+	{
+
+		if(!isset($this->vars[$name])) $this->set($name);
+
+		return  $this->vars[$name];
+
+	}
+
+
+	/**
+	 * REder
+	 * @param $templateNmae
+	 */
+	protected function render($templateNmae){
+		$file =  plugin_dir_path(__FILE__) . 'templates/'.$templateNmae.'.phtml' ;
+
+		if( file_exists( $file ) ) {
+			include( $file );
+		}else{
+			echo 'Template não encontrado em ' . $file;
+		}
+
+	}
+
+	/**
+	 * Get query args
+	 * @return array|string
+	 * @link http://php.net/manual/pt_BR/function.filter-input.php
+	 */
+	protected function getArgs(){
+		$query_args = '';
+
+		$args = array(
+			'wpmg'   => [
+				'filter' => FILTER_SANITIZE_STRING,
+				'flags'  => FILTER_REQUIRE_ARRAY
+			]
+		);
+
+		$inputs = filter_input_array(INPUT_POST, $args);
+
+		$query_args = array(
+			'post_type'       => $this->type,
+			'order'           => $this->order,
+			'orderby'         => $this->order_by,
+			'posts_per_page'  => $this->per_page,
+			'paged'           => $this->paged,
+			'post_status'     => 'publish',
+		);
+
+		if( !empty($inputs['wpmg']['tax'][$this->tax]) ) {
+
+			$this->term = $inputs['wpmg']['tax'][$this->tax];
+
+			$query_args['tax_query'][] = [
+				'taxonomy' => $this->tax,
+				'field'    => 'slug',
+				'terms'    => $this->term,
+			];
+
+		}
+
+		return $query_args;
 	}
 
 	/**
@@ -100,7 +184,7 @@ class WP_Masonry_Grid {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
+	protected function load_dependencies() {
 
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
@@ -113,11 +197,6 @@ class WP_Masonry_Grid {
 		 * of the plugin.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'src/WP_Masonry_Grid_i18n.php';
-
-		/**
-		 * Load class responsible for instance of shortcode of plugin
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ )  ) . 'src/WP_Masonry_Grid_Shortcode.php';
 
 		
 		/**
@@ -145,7 +224,7 @@ class WP_Masonry_Grid {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
+	protected function set_locale() {
 
 		$plugin_i18n = new WP_Masonry_Grid_i18n();
 		$plugin_i18n->set_domain( $this->get_plugin_name() );
@@ -161,7 +240,7 @@ class WP_Masonry_Grid {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	protected function define_admin_hooks() {
 
 		$plugin_admin = new WP_Masonry_Grid_Admin( $this->get_plugin_name(), $this->get_version() );
 
@@ -177,7 +256,7 @@ class WP_Masonry_Grid {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks() {
+	protected function define_public_hooks() {
 
 		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
 
@@ -186,18 +265,6 @@ class WP_Masonry_Grid {
 
 	}
 
-	/**
-	 * Register all of the shortcodes functionality of the plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 */
-	private function register_shortcodes() {
-//		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
-//		$this->loader->add_action( 'init', $plugin_public, 'register_wpmg_shortcode' );
-
-		$this->shortcode = new WP_Masonry_Grid_Shortcode();
-	}
 
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

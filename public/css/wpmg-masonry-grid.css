@@ -19,10 +19,15 @@ section.masonry-item {
     margin-bottom:  0.8rem;
     width:  100%;
     background:  #efefef;
+    overflow: hidden;
 }
 
 section.masonry-item .masonry-item-inner{
     padding: 0.5rem 1rem;
+}
+
+section.masonry-item img.wp-post-image{
+    min-width: 100% !important;
 }
 
 section.masonry-item .masonry-item-inner h3 {
