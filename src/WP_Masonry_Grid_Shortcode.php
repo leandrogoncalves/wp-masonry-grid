@@ -41,7 +41,7 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
     }
 
-  
+
 
     /**
      * Get a custom post from ACF plugin
@@ -102,8 +102,6 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
         $this->per_page = TRUE == empty($this->per_page) ? -1 : $this->paged;
 
         $this->acf = explode(',',$this->acf);
-
-        $this->site_url = get_site_url();
 
         $this->loop = new WP_Query ( $this->getArgs() );
 

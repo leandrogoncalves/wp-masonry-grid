@@ -13,6 +13,8 @@
  * @subpackage WP_Masonry_Grid/includes
  */
 
+
+
 /**
  * The core plugin class.
  *
@@ -28,6 +30,7 @@
  * @author     leandrogoncalves <contato.leandrogoncalves@gmail.com>
  */
 abstract class WP_Masonry_Grid {
+
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -57,12 +60,12 @@ abstract class WP_Masonry_Grid {
 	 */
 	protected $version;
 
-    /**
-     * array de variáveis
-     *
-     * @var array
-     */
-    protected $vars = [];
+	/**
+	 * array de variáveis
+	 *
+	 * @var array
+	 */
+	protected $vars = [];
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -77,11 +80,13 @@ abstract class WP_Masonry_Grid {
 
 		$this->plugin_name = 'wp-masonry-grid';
 		$this->version = '1.0.0';
+		$this->site_url = get_site_url();
+		$this->plugin_path = plugin_dir_path( dirname( __FILE__ ) );
 
 		$this->load_dependencies();
 		$this->set_locale();
-//		$this->define_admin_hooks();
 		$this->define_public_hooks();
+//		$this->define_admin_hooks();
 
 	}
 
@@ -117,7 +122,7 @@ abstract class WP_Masonry_Grid {
 	 * @param $templateNmae
 	 */
 	protected function render($templateNmae){
-		$file =  plugin_dir_path(__FILE__) . 'templates/'.$templateNmae.'.phtml' ;
+		$file =  $this->plugin_path . 'src/templates/'.$templateNmae.'.phtml' ;
 
 		if( file_exists( $file ) ) {
 			include( $file );
@@ -133,7 +138,11 @@ abstract class WP_Masonry_Grid {
 	 * @link http://php.net/manual/pt_BR/function.filter-input.php
 	 */
 	protected function getArgs(){
-		$query_args = '';
+		$query_hooks = new WP_Masonry_Grid_Query();
+		$query_args = [];
+		$this->where = [];
+		global $wpdb;
+
 
 		$args = array(
 			'wpmg'   => [
@@ -144,14 +153,14 @@ abstract class WP_Masonry_Grid {
 
 		$inputs = filter_input_array(INPUT_POST, $args);
 
-		$query_args = array(
+		$query_args = [
 			'post_type'       => $this->type,
 			'order'           => $this->order,
 			'orderby'         => $this->order_by,
 			'posts_per_page'  => $this->per_page,
 			'paged'           => $this->paged,
 			'post_status'     => 'publish',
-		);
+		];
 
 		if( !empty($inputs['wpmg']['tax'][$this->tax]) ) {
 
@@ -165,8 +174,21 @@ abstract class WP_Masonry_Grid {
 
 		}
 
+		if( !empty($inputs['wpmg']['filter']['title'])){
+			$query_hooks->setTitleFilter($inputs['wpmg']['filter']['title']);
+		}
+
+		if( !empty($inputs['wpmg']['filter']['letter'])){
+			$query_hooks->setLetterFilter($inputs['wpmg']['filter']['letter']);
+		}
+
+
+		$this->loader->add_filter('posts_where', $query_hooks, 'post_where', 10, 2)->run();
+
 		return $query_args;
 	}
+
+
 
 	/**
 	 * Load the required dependencies for this plugin.
@@ -190,15 +212,20 @@ abstract class WP_Masonry_Grid {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'src/WP_Masonry_Grid_Loader.php';
+		require_once $this->plugin_path . 'src/WP_Masonry_Grid_Loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'src/WP_Masonry_Grid_i18n.php';
+		require_once $this->plugin_path  . 'src/WP_Masonry_Grid_i18n.php';
 
-		
+		/***
+		 * Class reponiable for wp query implements
+		 */
+		require_once $this->plugin_path  . 'src/WP_Masonry_Grid_Query.php';
+
+
 		/**
 		 * The class responsible for defining all actions that occur in the admin area.
 		 */
@@ -208,11 +235,9 @@ abstract class WP_Masonry_Grid {
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/WP_Masonry_Grid_Public.php';
-
+		require_once $this->plugin_path  . 'public/WP_Masonry_Grid_Public.php';
 
 		$this->loader = new WP_Masonry_Grid_Loader();
-
 	}
 
 	/**
@@ -226,10 +251,10 @@ abstract class WP_Masonry_Grid {
 	 */
 	protected function set_locale() {
 
-		$plugin_i18n = new WP_Masonry_Grid_i18n();
-		$plugin_i18n->set_domain( $this->get_plugin_name() );
+		$this->plugin_i18n = new WP_Masonry_Grid_i18n();
+		$this->plugin_i18n->set_domain( $this->get_plugin_name() );
 
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		$this->loader->add_action( 'plugins_loaded', $this->plugin_i18n, 'load_plugin_textdomain' );
 
 	}
 
@@ -242,10 +267,10 @@ abstract class WP_Masonry_Grid {
 	 */
 	protected function define_admin_hooks() {
 
-		$plugin_admin = new WP_Masonry_Grid_Admin( $this->get_plugin_name(), $this->get_version() );
+		$this->plugin_admin = new WP_Masonry_Grid_Admin( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
-		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $this->plugin_admin, 'enqueue_styles' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $this->plugin_admin, 'enqueue_scripts' );
 
 	}
 
@@ -258,9 +283,9 @@ abstract class WP_Masonry_Grid {
 	 */
 	protected function define_public_hooks() {
 
-		$plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
+		$this->plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'enqueue_styles' );
 //		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 	}

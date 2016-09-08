@@ -65,6 +65,7 @@ class WP_Masonry_Grid_Loader {
 	 */
 	public function add_action( $hook, $component, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->actions = $this->add( $this->actions, $hook, $component, $callback, $priority, $accepted_args );
+		return $this;
 	}
 
 	/**
@@ -79,6 +80,7 @@ class WP_Masonry_Grid_Loader {
 	 */
 	public function add_filter( $hook, $component, $callback, $priority = 10, $accepted_args = 1 ) {
 		$this->filters = $this->add( $this->filters, $hook, $component, $callback, $priority, $accepted_args );
+		return $this;
 	}
 
 	/**
@@ -116,13 +118,21 @@ class WP_Masonry_Grid_Loader {
 	 */
 	public function run() {
 
-		foreach ( $this->filters as $hook ) {
-			add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+		if(!empty( $this->filters)){
+			foreach ( $this->filters as $k => &$hook ) {
+				add_filter( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+				unset($hook);
+			}
 		}
 
-		foreach ( $this->actions as $hook ) {
-			add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+		if(!empty( $this->actions)){
+			foreach ( $this->actions as $k => &$hook ) {
+				add_action( $hook['hook'], array( $hook['component'], $hook['callback'] ), $hook['priority'], $hook['accepted_args'] );
+				unset($hook);
+			}
 		}
+
+		return $this;
 
 	}
 
