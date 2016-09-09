@@ -40,6 +40,14 @@ class WP_Masonry_Grid_Public {
 	 */
 	private $version;
 
+
+	/**
+	 * The plugin path
+	 *
+	 * @var String
+	 */
+	private $plugin_path;
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -51,6 +59,7 @@ class WP_Masonry_Grid_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->plugin_path = plugin_dir_url( __FILE__ );
 
 	}
 
@@ -73,8 +82,9 @@ class WP_Masonry_Grid_Public {
 		 * class.
 		 */
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wpmg-masonry-grid.css',
-						  array(), $this->version,
+		wp_enqueue_style( $this->plugin_name, $this->plugin_path . 'css/wpmg-masonry-grid.css',
+						  array(),
+						  $this->version,
 						  'all'
 		);
 
@@ -87,14 +97,19 @@ class WP_Masonry_Grid_Public {
 	 */
 	public function enqueue_scripts() {
 
-		wp_enqueue_script( $this->plugin_name . 'isotope', plugin_dir_url( __FILE__ ) . 'js/isotope.pkgd.min.js',
+		wp_enqueue_script( $this->plugin_name.'-js' , $this->plugin_path . 'js/wp-masonry-grid-main.js',
 						   array( 'jquery' ),
-						   $this->version, false
+						   $this->version,
+						   false
 		);
-		wp_enqueue_script( $this->plugin_name . 'imagesloaded', plugin_dir_url( __FILE__ ) . 'js/imagesloaded.pkgd.min.js',
-						   array( 'jquery' ),
-						   $this->version, false
-		);
+//		wp_enqueue_script( $this->plugin_name . 'isotope', $this->plugin_path . 'js/isotope.pkgd.min.js',
+//						   array( 'jquery' ),
+//						   $this->version, false
+//		);
+//		wp_enqueue_script( $this->plugin_name . 'imagesloaded', $this->plugin_path . 'js/imagesloaded.pkgd.min.js',
+//						   array( 'jquery' ),
+//						   $this->version, false
+//		);
 
 	}
 

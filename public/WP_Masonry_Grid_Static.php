@@ -85,7 +85,5 @@ class WP_Masonry_Grid_Static
             }
         }
     }
-
-
     
 }
