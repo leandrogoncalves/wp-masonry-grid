@@ -43,7 +43,7 @@ class WP_Masonry_Grid_Static
 
         $field = explode('-',$name);
 
-        if(!empty($inputs)){
+        if(!empty($inputs) && isset($inputs['wpmg'])){
             if(array_key_exists($field[1], $inputs['wpmg'])){
                 if(array_key_exists($field[2], $inputs['wpmg']['filter'])){
                     switch ($field[2]){
@@ -77,7 +77,7 @@ class WP_Masonry_Grid_Static
         $inputs = self::getInput();
         $field  = explode('-',$name);
 
-        if(!empty($inputs)){
+        if(!empty($inputs) && isset($inputs['wpmg'])){
             if(array_key_exists($field[1], $inputs['wpmg'])){
                 if(array_key_exists($field[2], $inputs['wpmg']['filter'])){
                     return  $inputs['wpmg']['filter']['title'];
@@ -85,5 +85,7 @@ class WP_Masonry_Grid_Static
             }
         }
     }
-    
+
+
+
 }

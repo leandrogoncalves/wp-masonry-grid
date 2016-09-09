@@ -143,8 +143,9 @@ abstract class WP_Masonry_Grid {
 		$this->where = [];
 		global $wpdb;
 
-		$inputs = WP_Masonry_Grid_Static::getInput();
+		$this->request = WP_Masonry_Grid_Static::getInput();
 
+		$this->paged = isset($this->request['pg']) ? (int) $this->request['pg'] : absint( get_query_var( 'paged' ) )  ;
 
 		$query_args = [
 			'post_type'       => $this->type,
@@ -155,9 +156,10 @@ abstract class WP_Masonry_Grid {
 			'post_status'     => 'publish',
 		];
 
-		if( !empty($inputs['wpmg']['tax'][$this->tax]) ) {
 
-			$this->term = $inputs['wpmg']['tax'][$this->tax];
+		if( !empty($this->request['wpmg']['tax'][$this->tax]) ) {
+
+			$this->term = $this->request['wpmg']['tax'][$this->tax];
 
 			$query_args['tax_query'][] = [
 				'taxonomy' => $this->tax,
@@ -167,12 +169,12 @@ abstract class WP_Masonry_Grid {
 
 		}
 
-		if( !empty($inputs['wpmg']['filter']['title'])){
-			$query_hooks->setTitleFilter($inputs['wpmg']['filter']['title']);
+		if( !empty($this->request['wpmg']['filter']['title'])){
+			$query_hooks->setTitleFilter($this->request['wpmg']['filter']['title']);
 		}
 
-		if( !empty($inputs['wpmg']['filter']['letter'])){
-			$query_hooks->setLetterFilter($inputs['wpmg']['filter']['letter']);
+		if( !empty($this->request['wpmg']['filter']['letter'])){
+			$query_hooks->setLetterFilter($this->request['wpmg']['filter']['letter']);
 		}
 
 
@@ -284,7 +286,7 @@ abstract class WP_Masonry_Grid {
 		$this->plugin_public = new WP_Masonry_Grid_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'enqueue_styles' );
-//		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'enqueue_scripts' );
 
 	}
 

@@ -44,3 +44,35 @@ section.masonry-item .masonry-item-inner p {
     color: #A1A1A1;
     font-size: 14px;
 }
+
+/*----------------------*\
+       wpmg-nav
+\*----------------------*/
+
+.wpmg-nav li a,
+.wpmg-nav li a:hover,
+.wpmg-nav li.active a,
+.wpmg-nav li.disabled {
+    color: #fff;
+    text-decoration:none;
+}
+
+.wpmg-nav li {
+    display: inline;
+}
+
+.wpmg-nav li a,
+.wpmg-nav li a:hover,
+.wpmg-nav li.active a,
+.wpmg-nav li.disabled {
+    background-color: #6FB7E9;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 12px;
+    padding: 0.75rem;
+}
+
+.wpmg-nav li a:hover,
+.wpmg-nav li.active a {
+    background-color: #3C8DC5;
+}

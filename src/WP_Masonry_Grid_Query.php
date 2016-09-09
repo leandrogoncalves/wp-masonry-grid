@@ -11,11 +11,6 @@ class WP_Masonry_Grid_Query
     private $where = [];
 
     /**
-     * @var string
-     */
-    private $postTable = '';
-
-    /**
      * WP_Masonry_Grid_Query constructor.
      */
     public function __construct() { }
