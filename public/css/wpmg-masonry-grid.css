@@ -73,54 +73,53 @@ section.masonry-item {
    @link http://salvattore.com/
 \*------------------------------*/
 
-article.masonry-wrapper::before  {
-    content: '3 .column.size-1of3';
-}
-
-.column { float: left; }
-
 @media screen and (max-width: 480px){
-    article.masonry-wrapper::before {
+    .masonry-wrapper[data-columns]::before {
         content: '1 .column.size-1of1';
     }
 }
 
 @media screen and (min-width: 481px) and (max-width: 768px) {
-    article.masonry-wrapper::before {
+    .masonry-wrapper[data-columns]::before {
         content: '2 .column.size-1of2';
     }
 }
 @media screen and (min-width: 769px) {
-    article.masonry-wrapper::before {
+    .masonry-wrapper[data-columns]::before {
         content: '3 .column.size-1of3';
     }
 }
 
-/* Again, you’re free to use and define the classes: */
 .column { float: left; }
 .size-1of1 { width: 100%; }
 .size-1of2 { width: 50%; }
 .size-1of3 { width: 33.333%; }
 
+.masonry-item {
+    margin: 0 0.5rem 1rem;
+    background:  #efefef;
+    overflow: hidden;
+}
 
-section.masonry-item .masonry-item-inner{
+
+.masonry-item .masonry-item-inner{
     padding: 0.5rem 1rem;
 }
 
-section.masonry-item img.wp-post-image{
+.masonry-item img.wp-post-image{
     min-width: 100% !important;
 }
 
-section.masonry-item .masonry-item-inner h3 {
+.masonry-item .masonry-item-inner h3 {
     font-weight: lighter !important;
     margin-bottom: 0;
 }
 
-section.masonry-item .masonry-item-inner h6 {
+.masonry-item .masonry-item-inner h6 {
     font-weight: bold !important;
 }
 
-section.masonry-item .masonry-item-inner p {
+.masonry-item .masonry-item-inner p {
     font-weight: lighter !important;
     color: #A1A1A1;
     font-size: 14px;
@@ -129,6 +128,13 @@ section.masonry-item .masonry-item-inner p {
 /*----------------------*\
        wpmg-nav
 \*----------------------*/
+
+.wpmg-nav{
+    float: left;
+    margin-top: 50px;
+    display: block;
+}
+
 
 .wpmg-nav li a,
 .wpmg-nav li a:hover,
@@ -156,4 +162,16 @@ section.masonry-item .masonry-item-inner p {
 .wpmg-nav li a:hover,
 .wpmg-nav li.active a {
     background-color: #3C8DC5;
+}
+
+
+@media screen and (min-width: 481px) and (max-width: 1099px) {
+    .test-grid[data-columns]::before {
+        content: '2 .column.size-1of2';
+    }
+}
+@media screen and (min-width: 1100px) {
+    .test-grid[data-columns]::before {
+        content: '3 .column.size-1of3';
+    }
 }

@@ -2,7 +2,7 @@
 $endereco = $this->customFields[$this->ID]['piso'] . ' - Loja nº ' . $this->customFields[$this->ID]['numero_loja'];
 $telefone = $this->customFields[$this->ID]['telefone'];
 ?>
-<section  class="masonry-item">
+<div class="masonry-item">
     <?php if( has_post_thumbnail()) : ?>
         <a href="<?= $this->permalink ?>" title="<?= $this->title; ?>">
             <?php the_post_thumbnail( 'medium' ); ?>
@@ -14,4 +14,4 @@ $telefone = $this->customFields[$this->ID]['telefone'];
         <p><img src="<?= $this->site_url ?>/wp-content/uploads/2016/08/pin.svg" />  <?= $endereco ?></p>
         <p><img src="<?= $this->site_url ?>/wp-content/uploads/2016/08/telefone.svg" />  <?= $telefone ?></p>
     </div>
-</section>
+</div>

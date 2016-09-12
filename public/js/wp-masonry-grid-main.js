@@ -19,6 +19,14 @@ if(jQuery){
 
         };
 
+        //Concerta posicionamento da paginação quando tem apenas um ou dois resultados na busca
+        $(document).ready(function () {
+            var h = $('.masonry-item:last-child').height();
+            $('.masonry-wrapper').css('height',h + 50);
+        });
+
+
+
     });
 
 }
