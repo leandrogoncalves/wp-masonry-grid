@@ -106,19 +106,13 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
         $this->loop = new WP_Query ( $this->getArgs() );
 
-        ob_start();
+
 
         if ( $this->loop->have_posts() ) {
-
-            $this->getMansoryMode();
-
+           return  $this->getSalvattoreMode();
         }else{
-            ?>
-            <p>Nenhum resultado encontrado</p>
-            <?php
+           return  " <p>Nenhum resultado encontrado</p> ";
         }
-
-        return ob_get_clean();
 
         wp_reset_query();
 
@@ -126,15 +120,20 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
 
     /**
-     * Mansory mode
-     * @param $atts
-     * @param $the_loop
+     * Salvattore mode - return the html structure of columns used in Salvattore mansoury framawork
+     *@link http://salvattore.com/
      */
-    private function getMansoryMode(){
+    private function getSalvattoreMode(){
 
-        ?>
-        <article class="masonry-wrapper">
-            <?php
+        $cols = [
+            'column1' => [],
+            'column2' => [],
+            'column3' => []
+        ];
+
+        $output = "<article class=\"masonry-wrapper\">";
+
+            $i = 0;
             while ( $this->loop->have_posts() ) : $this->loop->the_post();
 
                 $this->ID = get_the_ID();
@@ -156,17 +155,100 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
                 }
 
 
-                if($this->acf) $this->setACFCustomFields($this->acf, $this->ID);
+                $this->acf && $this->setACFCustomFields($this->acf, $this->ID);
+
+                ob_start();
 
                 $this->render('loop_masonry');
 
+                $cols["column{$i}"][] = ob_get_clean();
 
+                $i = ($i == 3)? 0 : $i;
+
+                $i++;
+
+            endwhile;
+
+
+        echo '<pre>';
+        die(print_r($cols));
+
+        if($i > 0 && $i < 4){
+            echo "<div class=\"column size-1of3\">";
+        }
+
+        if($i > 0 && $i < 4){
+            echo "</div>";
+        }
+
+
+        $output .= " </article>";
+
+        $output .= $this->getPagination();
+
+
+        return  $output;
+    }
+
+
+
+
+    /**
+     * Mansory mode
+     */
+    private function getMansoryMode(){
+
+        ob_start();
+
+        ?>
+        <article class="masonry-wrapper">
+            <?php
+            $i = 0;
+            while ( $this->loop->have_posts() ) : $this->loop->the_post();
+
+                $this->ID = get_the_ID();
+                $this->title = get_the_title();
+                $this->permalink = get_the_permalink();
+
+
+                if( null != $this->tax ) {
+                    $tax_terms = get_the_terms($this->ID, $this->tax );
+
+                    $this->seguimentos = [];
+                    if(!empty($tax_terms)){
+                        foreach ($tax_terms as  $tx){
+                            $this->seguimentos[] = "<a href='?wpmg_tax={$tx->slug}'>{$tx->name}</a>";
+                        }
+                    }
+                    $this->seguimentos = implode(' | ',  $this->seguimentos);
+
+                }
+
+
+                $this->acf && $this->setACFCustomFields($this->acf, $this->ID);
+
+                if($i > 0 && $i < 4){
+                    echo "<div class=\"column size-1of3\">";
+                }
+
+                $this->render('loop_masonry');
+
+                if($i > 0 && $i < 4){
+                    echo "</div>";
+                }
+
+                $i = ($i == 3)? 0 : $i;
+
+                $i++;
             endwhile;
             ?>
         </article>
         <?php
 
         $this->getPagination();
+
+
+        return ob_get_clean();
     }
 
 
@@ -283,6 +365,8 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
     private function getPagination(){
 
+        ob_start();
+
         /** Stop execution if there's only 1 page */
         if( $this->loop->max_num_pages <= 1 ) return;
 
@@ -341,6 +425,8 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
             printf( '<li>%s</li>' . "\n", get_next_posts_link() );
 
         echo '</ul></div>' . "\n";
+
+        return ob_get_clean();
     }
 
 
