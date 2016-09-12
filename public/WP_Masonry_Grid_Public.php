@@ -100,12 +100,12 @@ class WP_Masonry_Grid_Public {
 		wp_enqueue_script( $this->plugin_name.'-js' , $this->plugin_path . 'js/wp-masonry-grid-main.js',
 						   array( 'jquery' ),
 						   $this->version,
-						   false
+						   true
 		);
 		wp_enqueue_script( $this->plugin_name.'-js' , $this->plugin_path . 'js/salvattore.min.js',
 						   array( 'jquery' ),
 						   $this->version,
-						   false
+						   true
 		);
 //		wp_enqueue_script( $this->plugin_name . 'isotope', $this->plugin_path . 'js/isotope.pkgd.min.js',
 //						   array( 'jquery' ),
