@@ -102,7 +102,7 @@ class WP_Masonry_Grid_Public {
 						   $this->version,
 						   true
 		);
-		wp_enqueue_script( $this->plugin_name.'-js' , $this->plugin_path . 'js/salvattore.min.js',
+		wp_enqueue_script( $this->plugin_name.'-salvattore' , $this->plugin_path . 'js/salvattore.min.js',
 						   array( 'jquery' ),
 						   $this->version,
 						   true
