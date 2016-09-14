@@ -10,10 +10,10 @@
  * @since      1.0.0
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/includes
+ * @subpackage WP_Masonry_Grid/core
  */
 
-
+if(!defined('ABSPATH')) die('Wordpress is required');
 
 /**
  * The core plugin class.
@@ -27,7 +27,7 @@
  * @since      1.0.0
  * @package    WP_Masonry_Grid
  * @subpackage WP_Masonry_Grid/includes
- * @author     leandrogoncalves <contato.leandrogoncalves@gmail.com>
+ * @author     Leandro Goncalves <contato.Leandro Goncalves@gmail.com>
  */
 abstract class WP_Masonry_Grid {
 
@@ -67,6 +67,21 @@ abstract class WP_Masonry_Grid {
 	 */
 	protected $vars = [];
 
+
+	/**
+	 * Option name
+	 *
+	 * @var string
+	 */
+	protected $_option_name = 'wpmg_options';
+
+	/**
+	 * Capability name
+	 *
+	 * @var string
+	 */
+	private $_capability = 'wpmg_manager_cap';
+
 	/**
 	 * Define the core functionality of the plugin.
 	 *
@@ -78,12 +93,21 @@ abstract class WP_Masonry_Grid {
 	 */
 	protected function __construct() {
 
+		if (version_compare(PHP_VERSION, '5.5.0', '<')) {
+			wp_die(__("This plugin require the PHP version 5.5.0 or later ", 'grp_plugin'));
+		}
+		
+		
 		$this->plugin_name = 'wp-masonry-grid';
 		$this->version = '1.0.0';
 		$this->site_url = get_site_url();
 		$this->plugin_path = plugin_dir_path( dirname( __FILE__ ) );
 
 		$this->load_dependencies();
+		
+		$this->loader = new WP_Masonry_Grid_Loader();
+		$this->view = new WP_Masonry_Grid_View();
+
 		$this->set_locale();
 		$this->define_public_hooks();
 //		$this->define_admin_hooks();
@@ -96,7 +120,7 @@ abstract class WP_Masonry_Grid {
 	 * @param string $name  nome da variável
 	 * @param string $value valor
 	 */
-	protected function set($name, $value='')
+	private function set($name, $value='')
 	{
 		$this->vars[$name] = $value;
 		return $this;
@@ -109,78 +133,33 @@ abstract class WP_Masonry_Grid {
 	 */
 	public function __get($name)
 	{
-
 		if(!isset($this->vars[$name])) $this->set($name);
-
 		return  $this->vars[$name];
-
 	}
 
 
-	/**
-	 * Rendering views
-	 * @param $templateNmae
-	 */
-	protected function render($templateNmae){
-		$file =  $this->plugin_path . 'src/templates/'.$templateNmae.'.phtml' ;
-
-		if( file_exists( $file ) ) {
-			include( $file );
-		}else{
-			echo 'Template não encontrado em ' . $file;
-		}
-
-	}
 
 	/**
 	 * Get query args
 	 * @return array|string
 	 * @link http://php.net/manual/pt_BR/function.filter-input.php
 	 */
-	protected function getArgs(){
-		$query_hooks = new WP_Masonry_Grid_Query();
-		$query_args = [];
-		$this->where = [];
-		global $wpdb;
+	protected function getResults(array $filter = []){
 
-		$this->request = WP_Masonry_Grid_Static::getInput();
-
-		$this->paged = isset($this->request['pg']) ? (int) $this->request['pg'] : absint( get_query_var( 'paged' ) )  ;
-
-		$query_args = [
-			'post_type'       => $this->type,
-			'order'           => $this->order,
-			'orderby'         => $this->order_by,
-			'posts_per_page'  => $this->per_page,
-			'paged'           => $this->paged,
-			'post_status'     => 'publish',
-		];
-
-
-		if( !empty($this->request['wpmg']['tax'][$this->tax]) ) {
-
-			$this->term = $this->request['wpmg']['tax'][$this->tax];
-
-			$query_args['tax_query'][] = [
-				'taxonomy' => $this->tax,
-				'field'    => 'slug',
-				'terms'    => $this->term,
-			];
-
-		}
-
-		if( !empty($this->request['wpmg']['filter']['title'])){
-			$query_hooks->setTitleFilter($this->request['wpmg']['filter']['title']);
-		}
-
-		if( !empty($this->request['wpmg']['filter']['letter'])){
-			$query_hooks->setLetterFilter($this->request['wpmg']['filter']['letter']);
-		}
-
+		$query_hooks = new WP_Masonry_Grid_Query(
+			$this->type,
+			$this->order,
+			$this->order_by,
+			$this->per_page,
+			$this->paged,
+			'publish'
+		);
 
 		$this->loader->add_filter('posts_where', $query_hooks, 'post_where', 10, 2)->run();
 
-		return $query_args;
+		$result  = $query_hooks->getResults($filter);
+
+		return $result;
 	}
 
 
@@ -207,37 +186,46 @@ abstract class WP_Masonry_Grid {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
-		require_once $this->plugin_path . 'src/WP_Masonry_Grid_Loader.php';
+		require_once $this->plugin_path . 'core/WP_Masonry_Grid_Loader.php';
 
 		/**
 		 * The class responsible for defining internationalization functionality
 		 * of the plugin.
 		 */
-		require_once $this->plugin_path  . 'src/WP_Masonry_Grid_i18n.php';
+		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_i18n.php';
 
 		/***
 		 * Class reponsiable for wp query implements
 		 */
-		require_once $this->plugin_path  . 'src/WP_Masonry_Grid_Query.php';
+		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_Query.php';
+		
+		/***
+		 * Class reponsiable for wp ajax implements
+		 */
+		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_Ajax.php';
+
+		/***
+		 * Class reponsiable for load views implements
+		 */
+		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_View.php';
 
 		/***
 		 * Class reponiable for query string POST or GET
 		 */
-		require_once $this->plugin_path  . 'public/WP_Masonry_Grid_Static.php';
-
-
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-//		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/WP_Masonry_Grid_Admin.php';
+		require_once $this->plugin_path  . 'frontend/WP_Masonry_Grid_Static.php';
 
 		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */
-		require_once $this->plugin_path  . 'public/WP_Masonry_Grid_Public.php';
+		require_once $this->plugin_path  . 'frontend/WP_Masonry_Grid_Public.php';
 
-		$this->loader = new WP_Masonry_Grid_Loader();
+		/**
+		 * The class responsible for defining all actions that occur in the admin area.
+		 */
+//		require_once $this->plugin_path. 'backend/WP_Masonry_Grid_Admin.php';
+
+
 	}
 
 	/**
@@ -287,10 +275,66 @@ abstract class WP_Masonry_Grid {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'localizeAjaxScript' );
+
+		$this->ajax_plugin = new WP_Masonry_Grid_Ajax();
+		
+		$this->loader->add_action( 'wp_ajax_nopriv_wpmg_ajax_pagination', $this->ajax_plugin , 'AjaxPagination' );
+		$this->loader->add_action( 'wp_ajax_wpmg_ajax_pagination', $this->ajax_plugin , 'AjaxPagination' );
 
 	}
 
+	/**
+	 * Create the options
+	 */
+	protected function _update_options(array $opt = [])
+	{
+		delete_option($this->_option_name);
+		$options = get_option( $this->_option_name );
 
+		if( !empty($options) ){
+			$update_opt = array(
+				'type'         => (!empty($opt['post'])) ? $opt['post'] : $options['type'],
+				'per_page'     => (!empty($opt['per_page'])) ? $opt['per_page'] : $options['per_page'],
+				'order'        => (!empty($opt['order'])) ? $opt['order'] : $options['order'],
+				'order_by'     => (!empty($opt['order_by'])) ? $opt['order_by'] : $options['order_by'],
+				'tax'          => (!empty($opt['tax'])) ? $opt['tax'] : $options['tax'],
+				'term'         => (!empty($opt['term'])) ? $opt['term'] : $options['term'],
+				'acf'          => (!empty($opt['acf'])) ? $opt['acf'] : $options['acf'],
+				'paged'        => (!empty($opt['order'])) ? $opt['order'] : $options['paged'],
+				'pagination'   => (!empty($opt['order'])) ? $opt['pagination'] : $options['pagination'],
+			);
+			update_option( $this->_option_name, $update_opt );
+		}
+		else
+		{
+			$update_opt = array(
+				'type'         => (!empty($opt['post'])) ? $opt['post'] : $this->type,
+				'per_page'     => (!empty($opt['per_page'])) ? $opt['per_page'] :  $this->per_page,
+				'order'        => (!empty($opt['order'])) ? $opt['order'] :  $this->order,
+				'order_by'     => (!empty($opt['order_by'])) ? $opt['order_by'] :  $this->order_by,
+				'tax'          => (!empty($opt['tax'])) ? $opt['tax'] :  $this->tax,
+				'term'         => (!empty($opt['term'])) ? $opt['term'] :  $this->term,
+				'acf'          => (!empty($opt['acf'])) ? $opt['acf'] :  $this->acf,
+				'paged'        => (!empty($opt['order'])) ? $opt['paged'] :  $this->paged,
+				'pagination'   => (!empty($opt['order'])) ? $opt['pagination'] :  $this->pagination,
+			);
+			add_option( $this->_option_name, $update_opt );
+		}
+	}
+
+
+
+	/**
+	 * Create the capability
+	 */
+	private function _create_capability()
+	{
+		$role = get_role('administrator');
+
+		if( !$role->has_cap( $this->_capability ) )  $role->add_cap($this->_capability );
+	}
+	
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *

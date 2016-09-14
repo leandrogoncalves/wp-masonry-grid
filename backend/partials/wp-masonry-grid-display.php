@@ -9,7 +9,7 @@
  * @since      1.0.0
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/admin/partials
+ * @subpackage WP_Masonry_Grid/backend/partials
  */
 ?>
 

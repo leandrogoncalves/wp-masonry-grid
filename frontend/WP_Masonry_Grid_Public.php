@@ -7,9 +7,10 @@
  * @since      1.0.0
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/public
+ * @subpackage WP_Masonry_Grid/frontend
  */
 
+if(!defined('ABSPATH')) die('Wordpress is required');
 /**
  * The public-facing functionality of the plugin.
  *
@@ -17,8 +18,8 @@
  * enqueue the admin-specific stylesheet and JavaScript.
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/public
- * @author     leandrogoncalves <contato.leandrogoncalves@gmail.com>
+ * @subpackage WP_Masonry_Grid/frontend
+ * @author     Leandro Goncalves <contato.Leandro Goncalves@gmail.com>
  */
 class WP_Masonry_Grid_Public {
 
@@ -97,6 +98,8 @@ class WP_Masonry_Grid_Public {
 	 */
 	public function enqueue_scripts() {
 
+		wp_enqueue_script('jquery');
+		
 		wp_enqueue_script( $this->plugin_name.'-js' , $this->plugin_path . 'js/wp-masonry-grid-main.js',
 						   array( 'jquery' ),
 						   $this->version,
@@ -115,6 +118,18 @@ class WP_Masonry_Grid_Public {
 //						   array( 'jquery' ),
 //						   $this->version, false
 //		);
+
+	}
+
+	/**
+	 *  Create a call to ajax script in body from frontend
+	 */
+	public function localizeAjaxScript(){
+
+		wp_localize_script(  $this->plugin_name.'-js'
+			,'wpmg_ajax'
+			, array('ajaxurl' => admin_url( 'admin-ajax.php' )
+		));
 
 	}
 

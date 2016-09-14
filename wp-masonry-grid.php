@@ -9,7 +9,7 @@
  * Plugin URI:        https://github.com/leandrogoncalves/wp-masonry-grid
  * Description:       A plugin to easily build Masonry grid Layouts with any content.
  * Version:           1.0.0
- * Author:            Leandro Gonçavlves <contato.leandrogoncalves@gmail.com>
+ * Author:            Leandro Gonçavlves <contato.Leandro Goncalves@gmail.com>
  * Author URI:        https://github.com/leandrogoncalves/wp-masonry-grid
  * License:           MIT
  * License URI:       https://opensource.org/licenses/MIT
@@ -26,7 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.
  */
-require plugin_dir_path( __FILE__ ) . 'src/WP_Masonry_Grid_Shortcode.php';
+require plugin_dir_path( __FILE__ ) . 'core/WP_Masonry_Grid_Shortcode.php';
 
 $plugin = new WP_Masonry_Grid_Shortcode();
 $plugin->run();

@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -7,9 +8,10 @@
  * @since      1.0.0
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/admin
+ * @subpackage WP_Masonry_Grid/backend
  */
 
+if(!defined('ABSPATH')) die('Wordpress is required');
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -18,7 +20,7 @@
  *
  * @package    WP_Masonry_Grid
  * @subpackage WP_Masonry_Grid/admin
- * @author     leandrogoncalves <contato.leandrogoncalves@gmail.com>
+ * @author     Leandro Goncalves <contato.Leandro Goncalves@gmail.com>
  */
 class WP_Masonry_Grid_Admin {
 
@@ -51,6 +53,7 @@ class WP_Masonry_Grid_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->plugin_path = plugin_dir_url( __FILE__ );
 
 	}
 
@@ -61,7 +64,12 @@ class WP_Masonry_Grid_Admin {
 	 */
 	public function enqueue_styles() {
 
-//		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/css/wp-masonry-grid-admin.css', array(), $this->version, 'all' );
+		wp_enqueue_style(
+			$this->plugin_name
+			, $this->plugin_path  . 'css/wp-masonry-grid-admin.css'
+			, array()
+			, $this->version, 'all'
+		);
 
 	}
 
@@ -72,7 +80,11 @@ class WP_Masonry_Grid_Admin {
 	 */
 	public function enqueue_scripts() {
 
-//		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'admin/js/wp-masonry-grid-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name
+			, $this->plugin_path . 'js/wp-masonry-grid-admin.js'
+			, array( 'jquery' )
+			, $this->version
+			, true );
 
 	}
 

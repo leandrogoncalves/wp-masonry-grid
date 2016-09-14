@@ -1,4 +1,6 @@
 <?php
+if(!defined('ABSPATH')) die('Wordpress is required');
+
 /**
  * The [wpmg] shortcode of the plugin.
  *
@@ -6,13 +8,8 @@
  * @since      1.0.0
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/public
+ * @subpackage WP_Masonry_Grid/src
  */
-
-// If this file is called directly, abort.
-if ( ! defined( 'WPINC' ) ) {
-    die;
-}
 
 
 require_once 'WP_Masonry_Grid.php';
@@ -21,7 +18,7 @@ require_once 'WP_Masonry_Grid.php';
  * WP_Masonry_Grid Shortcode Class
  *
  * @package WP_Masonry_Grid_Shortcode
- * @author  Juan Javier Moreno <hello@wannathemes.com>
+ * @author  Leandro Goncalves <contato.Leandro Goncalves@gmail.com>
  *
  * @since 1.0.0
  */
@@ -38,32 +35,6 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
         parent::__construct();
         // Register shortcode
         add_shortcode( 'wpmg', array( $this, 'wpmg_shortcode' ) );
-
-    }
-
-
-
-    /**
-     * Get a custom post from ACF plugin
-     * @param $fieldNames
-     * @param $id
-     */
-    private function setACFCustomFields($fieldNames, $id){
-
-        if(function_exists('get_field')){
-            $acfFiels = [];
-            if(is_array($fieldNames)){
-                foreach ($fieldNames as $field) {
-                    $acfFiels[$field]  =  get_field($field, $id);
-                }
-            }else{
-                $acfFiels = array($fieldNames => get_field($fieldNames, $id));
-            }
-            $this->customFields = array ($id => $acfFiels);
-
-        }else{
-            wp_die('O plugin Advanced Custom Fields é necessario');
-        }
     }
 
 
@@ -80,32 +51,34 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
     public function wpmg_shortcode( $attributes ) {
 
         $atts = shortcode_atts( array(
-                                    'id'        => '',
-                                    'class'     => '',
-                                    'type'      => 'post',
-                                    'per_page'  => '',
-                                    'order'     => 'ASC',
-                                    'order_by'  => 'post_title',
-                                    'tax'       => '',
-                                    'term'      => '',
-                                    'acf'       => '',
-                                    'paged'     => '',
+                                    'id'           => '',
+                                    'class'        => '',
+                                    'type'         => 'lojas',
+                                    'per_page'     => '',
+                                    'order'        => 'ASC',
+                                    'order_by'     => 'post_title',
+                                    'tax'          => '',
+                                    'term'         => '',
+                                    'acf'          => '',
+                                    'paged'        => '',
+                                    'pagination'   => 'default',
                                 ), $attributes);
 
         foreach ($atts as $k => $att) $this->{$k} = $att;
+
+        $this->_update_options($atts);
 
         if( null == $this->id ) {
             $this->id = 'wpmg' . md5( date( 'jnYgis' ) );
         }
 
-        $this->paged = TRUE == empty($this->paged) ? 1 : $this->paged;
-        $this->per_page = TRUE == empty($this->per_page) ? -1 : $this->per_page;
+        $this->paged = !$this->paged ? 1 : $this->paged;
+
+        $this->per_page = !$this->per_page ? -1 : $this->per_page;
 
         $this->acf = explode(',',$this->acf);
 
-
-        $this->loop = new WP_Query ( $this->getArgs() );
-
+        $this->loop = $this->getResults(['tax'=>$this->tax]);
 
 
         if ( $this->loop->have_posts() ) {
@@ -124,47 +97,48 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
      */
     private function getMansoryMode(){
 
-        ob_start();
+        $vars = [];
 
+        ob_start()
         ?>
         <div class="masonry-wrapper" data-columns>
             <?php
             while ( $this->loop->have_posts() ) : $this->loop->the_post();
 
-                $this->ID = get_the_ID();
-                $this->title = get_the_title();
-                $this->permalink = get_the_permalink();
+                $vars['ID'] = get_the_ID();
+                $vars['title'] = get_the_title();
+                $vars['permalink'] = get_the_permalink();
 
 
                 if( null != $this->tax ) {
-                    $tax_terms = get_the_terms($this->ID, $this->tax );
+                    $tax_terms = get_the_terms($vars['ID'], $this->tax );
 
-                    $this->seguimentos = [];
+                    $seguimentos = [];
                     if(!empty($tax_terms)){
                         foreach ($tax_terms as  $tx){
-                            $this->seguimentos[] = "<a href='?wpmg_tax={$tx->slug}'>{$tx->name}</a>";
+                            $seguimentos[] = "<a href='?wpmg_tax={$tx->slug}'>{$tx->name}</a>";
                         }
                     }
-                    $this->seguimentos = implode(' | ',  $this->seguimentos);
+                    $vars['seguimentos'] = implode(' | ',  $seguimentos);
 
                 }
 
 
-                $this->acf && $this->setACFCustomFields($this->acf, $this->ID);
+                $vars['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $vars['ID'] ) : '';
 
-
-                $this->render('loop_masonry');
+                echo $this->view->render('frontend/loop_masonry', $vars);
 
             endwhile;
             ?>
         </div>
         <?php
 
-        $this->getPagination();
+       $this->pagination == 'default' && $this->getDefaultPagination();
+       $this->pagination == 'ajax' && $this->getAjaxPagination();
 
         wp_reset_query();
 
-        return ob_get_clean();
+       return ob_get_clean();
     }
 
 
@@ -279,7 +253,23 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
     }
 
 
-    private function getPagination(){
+    private function getAjaxPagination(){
+
+        /** Stop execution if there's only 1 page */
+        if( $this->loop->max_num_pages <= 1 ) return;
+
+        wp_nonce_field( 'wpmg-ajax-pagination' , 'wpmg-ajax-pagination-nonce' );
+
+        echo "<div class=\"wpmg-nav\"><ul><li><a href=\"javascript:void(0)\" id='wpmg-loadmore' data-page='1' >Ver  mais</a></li></ul></div>";
+        
+
+    }
+
+
+    /**
+     * Defautl pagination
+     */
+    private function getDefaultPagination(){
 
 
         /** Stop execution if there's only 1 page */

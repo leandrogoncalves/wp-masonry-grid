@@ -1,10 +1,27 @@
 <?php
+/**
+ * The stic  functionality of the plugin.
+ *
+ * @link       https://github.com/leandrogoncalves/wp-masonry-grid
+ * @since      1.0.0
+ *
+ * @package    WP_Masonry_Grid
+ * @subpackage WP_Masonry_Grid/frontend
+ */
 
+
+if(!defined('ABSPATH')) die('Wordpress is required');
 /**
  * Class WP_Masonry_Grid_Static
+ *
+ *
+ * @package    WP_Masonry_Grid
+ * @subpackage WP_Masonry_Grid/frontend
+ * @author     Leandro Goncalves <contato.Leandro Goncalves@gmail.com>
  */
 class WP_Masonry_Grid_Static
 {
+
     /**
      * Get POST and GET streams and sanitize the data
      * @return array|mixed
@@ -84,6 +101,32 @@ class WP_Masonry_Grid_Static
                 }
             }
         }
+    }
+
+
+
+    /**
+     * Get a custom post from ACF plugin
+     * @param $fieldNames
+     * @param $id
+     */
+    public static function getACFCustomFields($fieldNames, $id){
+
+        if(!function_exists('get_field')) wp_die('O plugin Advanced Custom Fields é necessario');
+
+        $acfFiels = [];
+
+        if(is_array($fieldNames)){
+            foreach ($fieldNames as $field) {
+                $acfFiels[$field]  =  get_field($field, $id);
+            }
+        }else{
+            $acfFiels = [$fieldNames => get_field($fieldNames, $id)];
+        }
+
+
+         return $acfFiels ? [$id => $acfFiels] : '';
+
     }
 
 

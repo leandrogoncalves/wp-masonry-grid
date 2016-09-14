@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Define the internationalization functionality
  *
@@ -10,8 +9,11 @@
  * @since      1.0.0
  *
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/includes
+ * @subpackage WP_Masonry_Grid/core
  */
+
+
+if(!defined('ABSPATH')) die('Wordpress is required');
 
 /**
  * Define the internationalization functionality.
@@ -21,8 +23,8 @@
  *
  * @since      1.0.0
  * @package    WP_Masonry_Grid
- * @subpackage WP_Masonry_Grid/includes
- * @author     leandrogoncalves <contato.leandrogoncalves@gmail.com>
+ * @subpackage WP_Masonry_Grid/core
+ * @author     Leandro Goncalves <contato.Leandro Goncalves@gmail.com>
  */
 class WP_Masonry_Grid_i18n {
 
