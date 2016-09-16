@@ -116,7 +116,11 @@ class WP_Masonry_Grid_Static
 
         $acfFiels = [];
 
-        if(is_array($fieldNames)){
+        if(!is_array($fieldNames) &&  !(FALSE === stripos($fieldNames,',' )) ){
+            $fieldNames = explode(',', $fieldNames);
+        }
+
+        if(is_array($fieldNames) && ! empty($fieldNames)){
             foreach ($fieldNames as $field) {
                 $acfFiels[$field]  =  get_field($field, $id);
             }

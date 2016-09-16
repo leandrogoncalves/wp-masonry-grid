@@ -32,7 +32,7 @@ class WP_Masonry_Grid_Query
     /**
      * @var array
      */
-    private $args = [];
+    public $args = [];
 
     /**
      * @var array
@@ -57,16 +57,44 @@ class WP_Masonry_Grid_Query
     /**
      * WP_Masonry_Grid_Query constructor.
      */
-    public function __construct($type='', $order='', $order_by='', $per_page='', $paged='', $post_status ='publish') {
+    public function __construct($type='posts', $order='', $orderby='', $per_page='9', $paged='1',  $post_status ='publish') {
         $this->args = [
             'post_type'       => $type,
             'order'           => $order,
-            'orderby'         => $order_by,
+            'orderby'         => $orderby,
             'posts_per_page'  => $per_page,
             'paged'           => $paged,
             'post_status'     => $post_status,
         ];
 
+    }
+
+    /**
+     * Set args a lot
+     * @param array $args
+     */
+    public function setArgs(array $args){
+        $this->args = [
+            'post_type'       => 'posts',
+            'order'           => '',
+            'orderby'         => '',
+            'posts_per_page'  => '9',
+            'paged'           => '1',
+            'post_status'     => 'publish',
+        ];
+
+        $this->args = array_merge($this->args, $args);
+
+        return $this;
+    }
+
+    /**
+     * @param array $args
+     */
+    public function setArg($name, $args)
+    {
+        $this->args[$name] = $args;
+        return $this;
     }
 
     /**
@@ -83,12 +111,15 @@ class WP_Masonry_Grid_Query
      * Retrieve the arguments of wp_query
      * @return array
      */
-    private function getQueryArgs(){
+    public function getQueryArgs(){
         global $wpdb;
+
         $this->request = WP_Masonry_Grid_Static::getInput();
 
-        $this->paged = isset($this->request['pg']) ? (int) $this->request['pg'] : absint( get_query_var( 'paged' ) )  ;
+        $this->args['paged'] = isset($this->request['pg']) ? (int) $this->request['pg'] : $this->args['paged']  ;
+        $this->args['paged'] = !empty(absint( get_query_var( 'paged' ) )) ? (int) absint( get_query_var( 'paged' ) ) : $this->args['paged'] ;
 
+        $this->args['offset'] = ($this->args['paged'] - 1) * $this->args['posts_per_page'];
 
         if( !empty($this->request['wpmg']['tax'][$this->tax]) ) {
 
@@ -115,7 +146,13 @@ class WP_Masonry_Grid_Query
 
     }
 
+    /**
+     * Verify if this is loaded
+     * @return int
+     */
+    public function isLoaded(){return(1);}
 
+    
     /**
      * Add custom where clause in sql query
      * @param $where

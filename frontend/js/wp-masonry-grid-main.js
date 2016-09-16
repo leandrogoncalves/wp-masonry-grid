@@ -40,11 +40,34 @@ if(jQuery){
                             $e.text('Carregando...');
                         },
                         success: function( result ) {
-                            alert( 'ok' );
                             console.log(result);
                             // console.log(result.data[0]);
-                            
+
+
+                            if(result.data != undefined && result.data != 0){
+                                var _parser = new DOMParser()
+                                    , _grid = document.querySelector('.masonry-wrapper')
+                                    , _item = document.createElement('span')
+                                    , _dom;
+
+                                for(var i = 0; i < result.data.length; i++){
+                                    // _dom = _parser.parseFromString(result.data[i], "text/xml");
+                                    // _dom = _dom.documentElement;
+                                    // _dom.firstChild.style.padding = '0';
+                                    // _el = _dom.firstElementChild;
+                                    // console.log(_el);
+                                    salvattore.appendElements(_grid, [_item]);
+                                    _item.outerHTML = result.data[i];
+                                }
+
+                            }
+
+
                             $e.text('Ver mais');
+                            $e.data('page',result.page);
+
+                            if(result.no_more) $e.hide();
+
                         },
                         error: function(jqXHR, textStatus){
                             console.log('Erro ao processar ajax: ' + textStatus);

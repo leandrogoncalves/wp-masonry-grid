@@ -11,6 +11,7 @@
  */
 
 
+
 if(!defined('ABSPATH')) die('Wordpress is required');
 /**
  * Class WP_Masonry_Grid_Ajax
@@ -27,14 +28,34 @@ class WP_Masonry_Grid_Ajax
      *
      * @var string
      */
-    protected $_option_name = 'wpmg_options';
+    private $_option_name = 'wpmg_options';
 
     /**
      * array de variáveis
      *
      * @var array
      */
-    protected $vars = [];
+    private $vars = [];
+
+    /**
+     * @var WP_Masonry_Grid_View Object
+     */
+    private $view;
+
+    /**
+     * @var WP_Masonry_Grid_Query
+     */
+    private $query;
+
+    /**
+     * WP_Masonry_Grid_Ajax constructor.
+     */
+    public function __construct() {
+        $this->plugin_path = plugin_dir_path( dirname( __FILE__ ) );
+        $this->_load_dependences();
+        $this->view  = new WP_Masonry_Grid_View();
+        $this->query = new WP_Masonry_Grid_Query();
+    }
 
 
     /**
@@ -59,12 +80,18 @@ class WP_Masonry_Grid_Ajax
         return  $this->vars[$name];
     }
 
+
     /**
-     * WP_Masonry_Grid_Ajax constructor.
+     * Load classes
      */
-    public function __construct() {
-        $this->plugin_path = plugin_dir_path( dirname( __FILE__ ) );
+    private function _load_dependences(){
+
+        require_once $this->plugin_path . 'core/WP_Masonry_Grid_Query.php';
+
+        require_once $this->plugin_path . 'core/WP_Masonry_Grid_View.php';
+
     }
+
 
 
     /**
@@ -73,12 +100,13 @@ class WP_Masonry_Grid_Ajax
     public function AjaxPagination(){
 
         $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
+        
         if(empty($dados)) die(0);
 
 
         $output = [
             'data'  => 0,
-            'page'  => $dados['page']
+            'page'  => ++$dados['page']
         ];
 
         /**
@@ -89,33 +117,34 @@ class WP_Masonry_Grid_Ajax
 
         $options = get_option( $this->_option_name );
 
-        $output['opt'] = $options;
-        
-        $wpmg_query = new WP_Masonry_Grid_Query(
-            $options['post_type'],
-            $options['order'],
-            $options['orderby'],
-            $options['posts_per_page'],
-            $dados['page'],
-            $options['post_status']
-        );
+        $args = [
+            'post_type'        => $options['type'],
+            'order'            => $options['order'],
+            'orderby'          => $options['orderby'] ,
+            'posts_per_page'   => $options['posts_per_page'] ,
+            'paged'            => $dados['page'] ,
+            'post_status'      => $options['post_status'],
+            'suppress_filters' => true //PROPRIEDADE NECESSARIA PARA USAR WP_QUERY COM AJAX ** NAO REMOVER **
+        ];
 
-        $this->rs = $wpmg_query->getResults();
+        $rs = $this->query->setArgs($args)->getResults();
 
-        if ( $this->rs ) {
+        $output['no_more'] = ($rs->max_num_pages == $dados['page'] || $rs->max_num_pages == 0) ? true : false;
 
-            while ( $this->rs->have_posts() ) : $this->rs->the_post();
+        $results = [];
 
-                ob_start();
+        if ( $rs ) {
 
-                $this->ID = get_the_ID();
-                $this->title = get_the_title();
-                $this->permalink = get_the_permalink();
+            while ( $rs->have_posts() ) : $rs->the_post();
 
-                $output['title'] = $this->title;
+
+                $vars['ID'] = get_the_ID();
+                $vars['title'] = get_the_title();
+                $vars['permalink'] = get_the_permalink();
+
 
                 if( null != $options['tax'] ) {
-                    $tax_terms = get_the_terms($this->ID, $this->tax );
+                    $tax_terms = get_the_terms($vars['ID'], $options['tax'] );
 
                     $seguimentos = [];
                     if(!empty($tax_terms)){
@@ -123,22 +152,29 @@ class WP_Masonry_Grid_Ajax
                             $seguimentos[] = "<a href='?wpmg_tax={$tx->slug}'>{$tx->name}</a>";
                         }
                     }
-                    $this->seguimentos = implode(' | ',  $seguimentos);
+                    $vars['seguimentos'] = implode(' | ',  $seguimentos);
 
                 }
 
-                $this->customFields =  $options['acf'] ? WP_Masonry_Grid_Static::getACFCustomFields($options['acf'], $this->ID) : '';
+                $vars['customFields'] = $options['acf'] ? WP_Masonry_Grid_Static::getACFCustomFields($options['acf'], $vars['ID'] ) : '';
 
-                $this->render('loop_masonry');
-
-                $output['data'][] =  ob_get_clean();
+                $results[] = $this->view->render('frontend/loop_masonry', $vars);
 
             endwhile;
 
         }
 
+        $output['query'] = $rs;
+        $output['args'] = $this->query->getQueryArgs();
+        $output['data'] = $results;
+
+        wp_reset_query();
+
         wp_send_json( $output );
 
     }
+
+
+
 
 }

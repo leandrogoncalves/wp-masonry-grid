@@ -149,8 +149,8 @@ abstract class WP_Masonry_Grid {
 		$query_hooks = new WP_Masonry_Grid_Query(
 			$this->type,
 			$this->order,
-			$this->order_by,
-			$this->per_page,
+			$this->orderby,
+			$this->posts_per_page,
 			$this->paged,
 			'publish'
 		);
@@ -292,32 +292,35 @@ abstract class WP_Masonry_Grid {
 		delete_option($this->_option_name);
 		$options = get_option( $this->_option_name );
 
+
 		if( !empty($options) ){
-			$update_opt = array(
+			$insert_opt = array(
 				'type'         => (!empty($opt['post'])) ? $opt['post'] : $options['type'],
-				'per_page'     => (!empty($opt['per_page'])) ? $opt['per_page'] : $options['per_page'],
+				'posts_per_page'  => (!empty($opt['posts_per_page'])) ? $opt['posts_per_page'] : $options['posts_per_page'],
 				'order'        => (!empty($opt['order'])) ? $opt['order'] : $options['order'],
-				'order_by'     => (!empty($opt['order_by'])) ? $opt['order_by'] : $options['order_by'],
+				'orderby'      => (!empty($opt['orderby'])) ? $opt['orderby'] : $options['orderby'],
+				'post_status'  => (!empty($opt['post_status'])) ? $opt['post_status'] : $options['post_status'],
 				'tax'          => (!empty($opt['tax'])) ? $opt['tax'] : $options['tax'],
 				'term'         => (!empty($opt['term'])) ? $opt['term'] : $options['term'],
 				'acf'          => (!empty($opt['acf'])) ? $opt['acf'] : $options['acf'],
-				'paged'        => (!empty($opt['order'])) ? $opt['order'] : $options['paged'],
-				'pagination'   => (!empty($opt['order'])) ? $opt['pagination'] : $options['pagination'],
+				'paged'        => (!empty($opt['paged'])) ? $opt['paged'] : $options['paged'],
+				'pagination'   => (!empty($opt['pagination'])) ? $opt['pagination'] : $options['pagination'],
 			);
-			update_option( $this->_option_name, $update_opt );
+			update_option( $this->_option_name, $insert_opt );
 		}
 		else
 		{
 			$update_opt = array(
 				'type'         => (!empty($opt['post'])) ? $opt['post'] : $this->type,
-				'per_page'     => (!empty($opt['per_page'])) ? $opt['per_page'] :  $this->per_page,
+				'posts_per_page'     => (!empty($opt['posts_per_page'])) ? $opt['posts_per_page'] :  $this->posts_per_page,
 				'order'        => (!empty($opt['order'])) ? $opt['order'] :  $this->order,
-				'order_by'     => (!empty($opt['order_by'])) ? $opt['order_by'] :  $this->order_by,
+				'orderby'      => (!empty($opt['orderby'])) ? $opt['orderby'] :  $this->orderby,
+				'post_status'  => (!empty($opt['post_status'])) ? $opt['post_status'] : $this->post_status,
 				'tax'          => (!empty($opt['tax'])) ? $opt['tax'] :  $this->tax,
 				'term'         => (!empty($opt['term'])) ? $opt['term'] :  $this->term,
 				'acf'          => (!empty($opt['acf'])) ? $opt['acf'] :  $this->acf,
-				'paged'        => (!empty($opt['order'])) ? $opt['paged'] :  $this->paged,
-				'pagination'   => (!empty($opt['order'])) ? $opt['pagination'] :  $this->pagination,
+				'paged'        => (!empty($opt['paged'])) ? $opt['paged'] :  $this->paged,
+				'pagination'   => (!empty($opt['pagination'])) ? $opt['pagination'] :  $this->pagination,
 			);
 			add_option( $this->_option_name, $update_opt );
 		}

@@ -51,32 +51,37 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
     public function wpmg_shortcode( $attributes ) {
 
         $atts = shortcode_atts( array(
-                                    'id'           => '',
-                                    'class'        => '',
-                                    'type'         => 'lojas',
-                                    'per_page'     => '',
-                                    'order'        => 'ASC',
-                                    'order_by'     => 'post_title',
-                                    'tax'          => '',
-                                    'term'         => '',
-                                    'acf'          => '',
-                                    'paged'        => '',
-                                    'pagination'   => 'default',
+                                    'id'              => '',
+                                    'class'           => '',
+                                    'type'            => 'lojas',
+                                    'posts_per_page'  => '',
+                                    'order'           => 'ASC',
+                                    'orderby'         => 'title',
+                                    'tax'             => '',
+                                    'term'            => '',
+                                    'acf'             => '',
+                                    'paged'           => '',
+                                    'pagination'      => 'default',
+                                    'post_status'     => 'publish',
                                 ), $attributes);
 
         foreach ($atts as $k => $att) $this->{$k} = $att;
 
-        $this->_update_options($atts);
 
         if( null == $this->id ) {
             $this->id = 'wpmg' . md5( date( 'jnYgis' ) );
         }
 
+        //Pagina atual de exibição de registros
         $this->paged = !$this->paged ? 1 : $this->paged;
 
-        $this->per_page = !$this->per_page ? -1 : $this->per_page;
+        //Posts por pagina
+        $this->posts_per_page = !$this->posts_per_page ? -1 : $this->posts_per_page;
 
+        //Array de nomes dos campos do ACF
         $this->acf = explode(',',$this->acf);
+
+        $this->_update_options($atts);
 
         $this->loop = $this->getResults(['tax'=>$this->tax]);
 
@@ -99,10 +104,11 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
         $vars = [];
 
-        ob_start()
+        ob_start();
         ?>
         <div class="masonry-wrapper" data-columns>
             <?php
+
             while ( $this->loop->have_posts() ) : $this->loop->the_post();
 
                 $vars['ID'] = get_the_ID();
@@ -123,12 +129,12 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
                 }
 
-
                 $vars['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $vars['ID'] ) : '';
 
                 echo $this->view->render('frontend/loop_masonry', $vars);
 
             endwhile;
+
             ?>
         </div>
         <?php

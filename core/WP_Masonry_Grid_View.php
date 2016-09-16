@@ -59,7 +59,8 @@ class WP_Masonry_Grid_View
         if(!isset($this->vars[$name])) $this->set($name);
         return  $this->vars[$name];
     }
-
+    
+    public function isLoaded(){return(1);}
 
 
     /**
@@ -87,7 +88,7 @@ class WP_Masonry_Grid_View
             include( $file );
             return ob_get_clean();
         }else{
-            echo 'Template não encontrado em ' . $file;
+            return 'Template não encontrado em ' . $file;
         }
 
     }
