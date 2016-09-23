@@ -74,6 +74,13 @@ if(jQuery){
                         }
                     })
                 });
+            },
+
+            filterByLetter: function(){
+                $('#filtro-letras input').on('click', function (event) {
+                    event.preventDefault();
+                    $('#frm_filtroLoja').submit();
+                });
             }
 
         };
@@ -81,6 +88,7 @@ if(jQuery){
         $(document).ready(function () {
             wpmg.front.fixPaginationPosition();
             wpmg.front.ajaxPagination();
+            wpmg.front.filterByLetter();
         });
 
 
