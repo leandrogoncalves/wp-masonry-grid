@@ -42,41 +42,62 @@ class WP_Masonry_Grid_Rewrite
     private $version;
 
 
+    /**
+     * The Options name of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $version    The current version of this plugin.
+     */
+    private $opt_name;
+
 
     /**
      * Initialize the class and set its properties.
      *
      * @since    1.0.0
-     * @param      string    $plugin_name       The name of the plugin.
-     * @param      string    $version    The version of this plugin.
+     * @param    string    $plugin_name       The name of the plugin.
+     * @param    string    $version    The version of this plugin.
      */
-    public function __construct( $plugin_name, $version ) {
+    public function __construct( $plugin_name, $version, $opt_name ) {
 
         $this->plugin_name = $plugin_name;
         $this->version = $version;
+        $this->opt_name = $opt_name;
 
     }
 
 
     public function load_all_rules(){
-        $this->add_category_rule();
+        $this->add_seguiments_rule();
     }
 
 
     /**
-     * Register the stylesheets for the public-facing side of the site.
+     * Register the rewrite rule for custom taxonies of the site.
+     * This run in init hook
      *
      * @since    1.0.0
      */
-    private function add_category_rule() {
+    private function add_seguiments_rule() {
 
-        add_rewrite_rule(
-            '^categoria/([ˆ/]*)$'
-            , 'index.php?wpmg_tax=$matches[1]'
-            ,'top'
-        );
+        $opts =  get_option( $this->opt_name );
 
-        add_rewrite_tag('%wpmg_tax%','([^/]*)');
+        if(!empty($opts['tax'])){
+
+            flush_rewrite_rules();
+
+            add_rewrite_rule(
+                '(.?.+?)/'.$opts['tax'].'/?([^/]*)/?$'
+                , 'index.php?pagename=$matches[1]&wpmg_tax_value=$matches[2]&wpmg_tax_type='.$opts['tax']
+                ,'top'
+            );
+
+            add_rewrite_tag('%wpmg_tax_type%','([^/]*)');
+            add_rewrite_tag('%wpmg_tax_value%','([^/]*)');
+
+        }
+
 
     }
 

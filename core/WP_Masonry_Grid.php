@@ -96,15 +96,15 @@ abstract class WP_Masonry_Grid {
 		if (version_compare(PHP_VERSION, '5.5.0', '<')) {
 			wp_die(__("This plugin require the PHP version 5.5.0 or later ", 'grp_plugin'));
 		}
-		
-		
+
+
 		$this->plugin_name = 'wp-masonry-grid';
 		$this->version = '1.0.0';
 		$this->site_url = get_site_url();
 		$this->plugin_path = plugin_dir_path( dirname( __FILE__ ) );
 
 		$this->load_dependencies();
-		
+
 		$this->loader = new WP_Masonry_Grid_Loader();
 		$this->view = new WP_Masonry_Grid_View();
 
@@ -198,7 +198,7 @@ abstract class WP_Masonry_Grid {
 		 * Class reponsiable for wp query implements
 		 */
 		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_Query.php';
-		
+
 		/***
 		 * Class reponsiable for wp ajax implements
 		 */
@@ -283,14 +283,12 @@ abstract class WP_Masonry_Grid {
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'localizeAjaxScript' );
 
 		$this->ajax_plugin = new WP_Masonry_Grid_Ajax( $this->get_plugin_name(), $this->get_version() );
-		
+
 		$this->loader->add_action( 'wp_ajax_nopriv_wpmg_ajax_pagination', $this->ajax_plugin , 'AjaxPagination' );
 		$this->loader->add_action( 'wp_ajax_wpmg_ajax_pagination', $this->ajax_plugin , 'AjaxPagination' );
 
-		$this->rewrite = new WP_Masonry_Grid_Rewrite( $this->get_plugin_name(), $this->get_version() );
+		$this->rewrite = new WP_Masonry_Grid_Rewrite( $this->get_plugin_name(), $this->get_version(), $this->_option_name );
 		$this->loader->add_action( 'init', $this->rewrite , 'load_all_rules' );
-
-
 
 	}
 
@@ -347,7 +345,7 @@ abstract class WP_Masonry_Grid {
 
 		if( !$role->has_cap( $this->_capability ) )  $role->add_cap($this->_capability );
 	}
-	
+
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *

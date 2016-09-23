@@ -35,6 +35,7 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
         parent::__construct();
         // Register shortcode
         add_shortcode( 'wpmg', array( $this, 'wpmg_shortcode' ) );
+
     }
 
 
@@ -49,6 +50,8 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
      * @param    array $atts Shortcode attributes
      */
     public function wpmg_shortcode( $attributes ) {
+
+        $this->page = get_query_var('pagename');
 
         $atts = shortcode_atts( array(
                                     'id'              => '',
@@ -119,10 +122,11 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
                 if( null != $this->tax ) {
                     $tax_terms = get_the_terms($vars['ID'], $this->tax );
 
+
                     $seguimentos = [];
                     if(!empty($tax_terms)){
                         foreach ($tax_terms as  $tx){
-                            $seguimentos[] = "<a href='?wpmg_tax={$tx->slug}'>{$tx->name}</a>";
+                            $seguimentos[] = "<a href='/{$this->page}/{$this->tax}/{$tx->slug}'>{$tx->name}</a>";
                         }
                     }
                     $vars['seguimentos'] = implode(' | ',  $seguimentos);
@@ -139,12 +143,12 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
         </div>
         <?php
 
-       $this->pagination == 'default' && $this->getDefaultPagination();
-       $this->pagination == 'ajax' && $this->getAjaxPagination();
+        $this->pagination == 'default' && $this->getDefaultPagination();
+        $this->pagination == 'ajax' && $this->getAjaxPagination();
 
         wp_reset_query();
 
-       return ob_get_clean();
+        return ob_get_clean();
     }
 
 
@@ -267,7 +271,7 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
         wp_nonce_field( 'wpmg-ajax-pagination' , 'wpmg-ajax-pagination-nonce' );
 
         echo "<div class=\"wpmg-nav\"><ul><li><a href=\"javascript:void(0)\" id='wpmg-loadmore' data-page='1' >Ver  mais</a></li></ul></div>";
-        
+
 
     }
 

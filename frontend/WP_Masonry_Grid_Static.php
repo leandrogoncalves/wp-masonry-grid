@@ -43,7 +43,18 @@ class WP_Masonry_Grid_Static
 
         if ($_SERVER['REQUEST_METHOD'] == 'GET'){
             $inputs['pg'] = filter_input(INPUT_GET, 'pg', FILTER_VALIDATE_INT);
+
+
+            $tax_type = get_query_var('wpmg_tax_type');
+            $tax_value = get_query_var('wpmg_tax_value');
+
+            if($tax_type && $tax_value){
+                $inputs['wpmg']['tax'][$tax_type] = $tax_value;
+            }
+
+
         }
+
 
         return $inputs;
     }
@@ -62,7 +73,7 @@ class WP_Masonry_Grid_Static
 
         if(!empty($inputs) && isset($inputs['wpmg'])){
             if(array_key_exists($field[1], $inputs['wpmg'])){
-                if(array_key_exists($field[2], $inputs['wpmg']['filter'])){
+                if(isset( $inputs['wpmg']['filter']) && array_key_exists($field[2], $inputs['wpmg']['filter'])){
                     switch ($field[2]){
                         case 'letter' :
                             $checado = $inputs['wpmg']['filter']['letter'] == $value ? true : false;
@@ -129,7 +140,7 @@ class WP_Masonry_Grid_Static
         }
 
 
-         return $acfFiels ? [$id => $acfFiels] : '';
+        return $acfFiels ? [$id => $acfFiels] : '';
 
     }
 
