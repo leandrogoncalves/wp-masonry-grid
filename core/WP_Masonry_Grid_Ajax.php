@@ -23,6 +23,25 @@ if(!defined('ABSPATH')) die('Wordpress is required');
  */
 class WP_Masonry_Grid_Ajax
 {
+
+    /**
+     * The ID of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $plugin_name    The ID of this plugin.
+     */
+    private $plugin_name;
+
+    /**
+     * The version of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $version    The current version of this plugin.
+     */
+    private $version;
+
     /**
      * Option name
      *
@@ -50,7 +69,11 @@ class WP_Masonry_Grid_Ajax
     /**
      * WP_Masonry_Grid_Ajax constructor.
      */
-    public function __construct() {
+    public function __construct( $plugin_name, $version ) {
+
+        $this->plugin_name = $plugin_name;
+        $this->version = $version;
+
         $this->plugin_path = plugin_dir_path( dirname( __FILE__ ) );
         $this->_load_dependences();
         $this->view  = new WP_Masonry_Grid_View();

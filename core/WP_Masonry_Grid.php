@@ -210,6 +210,11 @@ abstract class WP_Masonry_Grid {
 		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_View.php';
 
 		/***
+		 * Class reponsiable for load views implements
+		 */
+		require_once $this->plugin_path  . 'core/WP_Masonry_Grid_Rewrite.php';
+
+		/***
 		 * Class reponiable for query string POST or GET
 		 */
 		require_once $this->plugin_path  . 'frontend/WP_Masonry_Grid_Static.php';
@@ -277,10 +282,15 @@ abstract class WP_Masonry_Grid {
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $this->plugin_public, 'localizeAjaxScript' );
 
-		$this->ajax_plugin = new WP_Masonry_Grid_Ajax();
+		$this->ajax_plugin = new WP_Masonry_Grid_Ajax( $this->get_plugin_name(), $this->get_version() );
 		
 		$this->loader->add_action( 'wp_ajax_nopriv_wpmg_ajax_pagination', $this->ajax_plugin , 'AjaxPagination' );
 		$this->loader->add_action( 'wp_ajax_wpmg_ajax_pagination', $this->ajax_plugin , 'AjaxPagination' );
+
+		$this->rewrite = new WP_Masonry_Grid_Rewrite( $this->get_plugin_name(), $this->get_version() );
+		$this->loader->add_action( 'init', $this->rewrite , 'load_all_rules' );
+
+
 
 	}
 
