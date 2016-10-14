@@ -109,8 +109,11 @@ abstract class WP_Masonry_Grid {
 		$this->view = new WP_Masonry_Grid_View();
 
 		$this->set_locale();
-		$this->define_public_hooks();
-//		$this->define_admin_hooks();
+		if(!is_admin()){
+			$this->define_public_hooks();
+		}else{
+	//		$this->define_admin_hooks();
+		}
 
 	}
 
