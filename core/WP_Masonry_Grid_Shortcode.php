@@ -66,6 +66,7 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
                                     'paged'           => '',
                                     'pagination'      => 'default',
                                     'post_status'     => 'publish',
+                                    'mode'            => 'masonry'
                                 ), $attributes);
 
         foreach ($atts as $k => $att) $this->{$k} = $att;
@@ -88,16 +89,83 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
         $this->loop = $this->getResults(['tax'=>$this->tax]);
 
-
+        $output = null;
         if ( $this->loop->have_posts() ) {
-            return  $this->getMansoryMode();
+            switch ($this->mode){
+                case 'masonry':
+                    $output = $this->getMansoryMode();
+                    break;
+                case 'carousel':
+                    $output = $this->getCarouselMode();
+                    break;
+                case 'isotopo':
+                    $output = $this->getIsotopeMode();
+                    break;
+                default:
+                    $output = $this->getMansoryMode();
+                    break;
+            }
+
         }else{
-            return  " <p>Nenhum resultado encontrado</p> ";
+            $output = " <p>Nenhum resultado encontrado</p> ";
         }
 
-
-
+        return $output;
     }
+
+
+    /**
+     * Salvattore mode - return the html structure of columns used in Salvattore mansoury framawork
+     *@link http://salvattore.com/
+     */
+    private function getCarouselMode(){
+
+        $vars = [];
+
+        ob_start();
+        ?>
+        <div class="masonry-wrapper" data-columns>
+            <?php
+
+            while ( $this->loop->have_posts() ) : $this->loop->the_post();
+
+                $vars['ID'] = get_the_ID();
+                $vars['title'] = get_the_title();
+                $vars['permalink'] = get_the_permalink();
+
+
+                if( null != $this->tax ) {
+                    $tax_terms = get_the_terms($vars['ID'], $this->tax );
+
+
+                    $seguimentos = [];
+                    if(!empty($tax_terms)){
+                        foreach ($tax_terms as  $tx){
+                            $seguimentos[] = "<a href='/{$this->page}/{$this->tax}/{$tx->slug}'>{$tx->name}</a>";
+                        }
+                    }
+                    $vars['seguimentos'] = implode(' | ',  $seguimentos);
+
+                }
+
+                $vars['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $vars['ID'] ) : '';
+
+                echo $this->view->render('frontend/loop_masonry', $vars);
+
+            endwhile;
+
+            ?>
+        </div>
+        <?php
+
+        $this->pagination == 'default' && $this->getDefaultPagination();
+        $this->pagination == 'ajax' && $this->getAjaxPagination();
+
+        wp_reset_query();
+
+        return ob_get_clean();
+    }
+
 
     /**
      * Salvattore mode - return the html structure of columns used in Salvattore mansoury framawork
@@ -263,6 +331,9 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
     }
 
 
+    /**
+     * Ajax pagination
+     */
     private function getAjaxPagination(){
 
         /** Stop execution if there's only 1 page */
@@ -277,7 +348,7 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
 
     /**
-     * Defautl pagination
+     * Default pagination
      */
     private function getDefaultPagination(){
 

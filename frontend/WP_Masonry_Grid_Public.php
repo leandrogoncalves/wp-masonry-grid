@@ -83,6 +83,12 @@ class WP_Masonry_Grid_Public {
 		 * class.
 		 */
 
+		wp_register_style( 'bootstrap-css', $this->plugin_path . 'css/bootstrap.min.css',
+						array(),
+						'3.3.7',
+						'all'
+		);
+
 		wp_enqueue_style( $this->plugin_name, $this->plugin_path . 'css/wpmg-masonry-grid.css',
 						  array(),
 						  $this->version,
@@ -99,7 +105,13 @@ class WP_Masonry_Grid_Public {
 	public function enqueue_scripts() {
 
 		wp_enqueue_script('jquery');
-		
+
+		wp_register_script( 'bootstrap-js', $this->plugin_path . 'js/bootstrap.min.js',
+							array( 'jquery' ),
+							'3.3.7',
+							true
+		);
+
 		wp_enqueue_script( $this->plugin_name.'-js' , $this->plugin_path . 'js/wp-masonry-grid-main.js',
 						   array( 'jquery' ),
 						   $this->version,
