@@ -59,7 +59,7 @@ class WP_Masonry_Grid_View
         if(!isset($this->vars[$name])) $this->set($name);
         return  $this->vars[$name];
     }
-    
+
     public function isLoaded(){return(1);}
 
 
