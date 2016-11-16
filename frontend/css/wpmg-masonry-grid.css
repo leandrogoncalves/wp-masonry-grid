@@ -73,21 +73,44 @@ section.masonry-item {
    @link http://salvattore.com/
 \*------------------------------*/
 
+.masonry-collumn{
+    display: -webkit-flex;
+    display: flex;
+}
+
+
+.masonry-item {
+    margin: 0 0.5rem 1rem;
+    background:  #efefef;
+    overflow: hidden;
+    width: 30%;
+    display: inline-block;
+
+}
+
+
 @media screen and (max-width: 480px){
-    .masonry-wrapper[data-columns]::before {
-        content: '1 .column.size-1of1';
+    .masonry-item{
+        width: 67% !important;
     }
+    /*.masonry-wrapper[data-columns]::before {*/
+        /*content: '1 .column.size-1of1';*/
+    /*}*/
 }
 
 @media screen and (min-width: 481px) and (max-width: 768px) {
-    .masonry-wrapper[data-columns]::before {
-        content: '2 .column.size-1of2';
+    .masonry-item{
+        width: 40% !important;
     }
+    /*.masonry-wrapper[data-columns]::before {*/
+        /*content: '2 .column.size-1of2';*/
+    /*}*/
 }
 @media screen and (min-width: 769px) {
-    .masonry-wrapper[data-columns]::before {
-        content: '3 .column.size-1of3';
-    }
+
+    /*.masonry-wrapper[data-columns]::before {*/
+        /*content: '3 .column.size-1of3';*/
+    /*}*/
 }
 
 .column { float: left; }
@@ -95,11 +118,6 @@ section.masonry-item {
 .size-1of2 { width: 50%; }
 .size-1of3 { width: 33.333%; }
 
-.masonry-item {
-    margin: 0 0.5rem 1rem;
-    background:  #efefef;
-    overflow: hidden;
-}
 
 
 .masonry-item .masonry-item-inner{

@@ -17,11 +17,12 @@ if(jQuery){
             },
 
             //Concerta posicionamento da paginação quando tem apenas um ou dois resultados na busca
-            fixPaginationPosition: function(){
-                var h = $('.masonry-item:last-child').height();
-                $('.masonry-wrapper').css('height',h + 50);
-            },
+            // fixPaginationPosition: function(){
+            //     var h = $('.masonry-item:last-child').height();
+            //     $('.masonry-wrapper').css('height',h + 50);
+            // },
 
+            
             ajaxPagination: function(){
                 $(document).on('click', '#wpmg-loadmore',function(event){
                     event.preventDefault;

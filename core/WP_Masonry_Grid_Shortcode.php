@@ -111,33 +111,58 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
         ?>
         <div class="masonry-wrapper" data-columns>
             <?php
-
+            $post_thumb = null;
+            $posts = [];
             while ( $this->loop->have_posts() ) : $this->loop->the_post();
-
-                $vars['ID'] = get_the_ID();
-                $vars['title'] = get_the_title();
-                $vars['permalink'] = get_the_permalink();
-
+                $the_id = get_the_ID();
 
                 if( null != $this->tax ) {
-                    $tax_terms = get_the_terms($vars['ID'], $this->tax );
+                    $tax_terms = get_the_terms($the_id, $this->tax );
 
 
-                    $seguimentos = [];
+                    $segmentos = [];
                     if(!empty($tax_terms)){
                         foreach ($tax_terms as  $tx){
-                            $seguimentos[] = "<a href='/{$this->page}/{$this->tax}/{$tx->slug}'>{$tx->name}</a>";
+                            $segmentos[] = "<a href='/{$this->page}/{$this->tax}/{$tx->slug}'>{$tx->name}</a>";
                         }
                     }
-                    $vars['seguimentos'] = implode(' | ',  $seguimentos);
+                    $segmentos = implode(' | ',  $segmentos);
 
                 }
 
-                $vars['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $vars['ID'] ) : '';
+                if( has_post_thumbnail()) {
+                    ob_start();
+                    the_post_thumbnail( 'medium' );
+                    $post_thumb = ob_get_clean();
+                }
 
-                echo $this->view->render('frontend/loop_masonry', $vars);
+
+                $posts[] = [
+                    'ID'        => $the_id,
+                    'title'     => get_the_title(),
+                    'permalink' => get_the_permalink(),
+                    'segmentos' => $segmentos,
+                    'thumb'     => $post_thumb
+                ];
+
+
 
             endwhile;
+
+            $chunk = array_chunk($posts, 3);
+
+            foreach ($chunk as $post){
+                ?>
+                <div class="masonry-collumn">
+                    <?php
+                        foreach ($post as $p){
+                            $p['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $p['ID'] ) : '';
+                            echo $this->view->render('frontend/loop_masonry', $p);
+                        }
+                    ?>
+                </div>
+                <?php
+            }
 
             ?>
         </div>

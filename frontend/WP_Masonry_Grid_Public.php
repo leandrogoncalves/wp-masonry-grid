@@ -105,19 +105,30 @@ class WP_Masonry_Grid_Public {
 						   $this->version,
 						   true
 		);
+/**
+ * REMOVIDO POR INCOMPATIBILIDADE COM SCRIPT DE GRID DO TEMA
+ */
+		/*
 		wp_enqueue_script( $this->plugin_name.'-salvattore' , $this->plugin_path . 'js/salvattore.min.js',
 						   array( 'jquery' ),
 						   $this->version,
 						   true
 		);
-//		wp_enqueue_script( $this->plugin_name . 'isotope', $this->plugin_path . 'js/isotope.pkgd.min.js',
-//						   array( 'jquery' ),
-//						   $this->version, false
-//		);
-//		wp_enqueue_script( $this->plugin_name . 'imagesloaded', $this->plugin_path . 'js/imagesloaded.pkgd.min.js',
-//						   array( 'jquery' ),
-//						   $this->version, false
-//		);
+		*/
+
+/**
+ * DESCONTINUADO
+ */
+		/*
+		wp_enqueue_script( $this->plugin_name . 'isotope', $this->plugin_path . 'js/isotope.pkgd.min.js',
+						   array( 'jquery' ),
+						   $this->version, false
+		);
+		wp_enqueue_script( $this->plugin_name . 'imagesloaded', $this->plugin_path . 'js/imagesloaded.pkgd.min.js',
+						   array( 'jquery' ),
+						   $this->version, false
+		);
+		*/
 
 	}
 
