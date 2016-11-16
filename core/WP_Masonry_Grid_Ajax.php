@@ -123,8 +123,10 @@ class WP_Masonry_Grid_Ajax
     public function AjaxPagination(){
 
         $dados = filter_input_array(INPUT_POST, FILTER_DEFAULT);
-        
-        if(empty($dados)) die(0);
+
+        wp_send_json( ['teste'=>1] );
+        /*
+        if(empty($dados)) die('error data');
 
 
         $output = [
@@ -135,8 +137,8 @@ class WP_Masonry_Grid_Ajax
         /**
          * @param 1 - string nonce
          * @param 2 - nome do acao no momento da geração do nonce pela função wp_nonce_field
-         */
-        if(wp_verify_nonce($dados['nonce'], 'wpmg-ajax-pagination')) die(0);
+
+        if(wp_verify_nonce($dados['nonce'], 'wpmg-ajax-pagination')) die('nonce error');
 
         $options = get_option( $this->_option_name );
 
@@ -194,7 +196,7 @@ class WP_Masonry_Grid_Ajax
         wp_reset_query();
 
         wp_send_json( $output );
-
+*/
     }
 
 

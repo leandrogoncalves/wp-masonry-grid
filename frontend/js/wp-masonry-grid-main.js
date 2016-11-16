@@ -46,6 +46,8 @@ if(jQuery){
 
 
                             if(result.data != undefined && result.data != 0){
+                                alert('teste');
+                                /*
                                 var _parser = new DOMParser()
                                     , _grid = document.querySelector('.masonry-wrapper')
                                     , _item = document.createElement('span')
@@ -60,7 +62,7 @@ if(jQuery){
                                     salvattore.appendElements(_grid, [_item]);
                                     _item.outerHTML = result.data[i];
                                 }
-
+                                */
                             }
 
 
@@ -87,7 +89,7 @@ if(jQuery){
         };
 
         $(document).ready(function () {
-            wpmg.front.fixPaginationPosition();
+            // wpmg.front.fixPaginationPosition();
             wpmg.front.ajaxPagination();
             wpmg.front.filterByLetter();
         });
