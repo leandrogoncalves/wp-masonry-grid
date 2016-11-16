@@ -114,13 +114,16 @@ class WP_Masonry_Grid_Query
     public function getQueryArgs(){
         global $wpdb;
 
+        //Pega dados vindos do request
         $this->request = WP_Masonry_Grid_Static::getInput();
 
+        //PAGINACAOç configura a pãgina atual
         $this->args['paged'] = isset($this->request['pg']) ? (int) $this->request['pg'] : $this->args['paged']  ;
         $this->args['paged'] = !empty(absint( get_query_var( 'paged' ) )) ? (int) absint( get_query_var( 'paged' ) ) : $this->args['paged'] ;
 
         $this->args['offset'] = ($this->args['paged'] - 1) * $this->args['posts_per_page'];
 
+        //Filtro por taxonimia vinda do request
         if( !empty($this->request['wpmg']['tax'][$this->tax]) ) {
 
             $this->term = $this->request['wpmg']['tax'][$this->tax];
@@ -133,10 +136,12 @@ class WP_Masonry_Grid_Query
 
         }
 
+        //Filtro especifico por titulo vindo do request
         if( !empty($this->request['wpmg']['filter']['title'])){
             $this->where[] =  ' AND ' . $wpdb->posts. '.post_title LIKE \'%' . esc_sql( $wpdb->esc_like($this->request['wpmg']['filter']['title']) ) . '%\'';
         }
 
+        //Filtro especificao por letra vinda do request
         if( !empty($this->request['wpmg']['filter']['letter'])){
             $this->where[] =  ' AND ' . $wpdb->posts. '.post_title LIKE \'' . esc_sql( $wpdb->esc_like($this->request['wpmg']['filter']['letter']) ) . '%\'';
         }
@@ -152,7 +157,7 @@ class WP_Masonry_Grid_Query
      */
     public function isLoaded(){return(1);}
 
-    
+
     /**
      * Add custom where clause in sql query
      * @param $where

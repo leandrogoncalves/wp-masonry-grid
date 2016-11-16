@@ -65,7 +65,7 @@ abstract class WP_Masonry_Grid {
 	 *
 	 * @var array
 	 */
-	protected $vars = [];
+	protected $vars_main = [];
 
 
 	/**
@@ -109,8 +109,11 @@ abstract class WP_Masonry_Grid {
 		$this->view = new WP_Masonry_Grid_View();
 
 		$this->set_locale();
-		$this->define_public_hooks();
-//		$this->define_admin_hooks();
+		if(!is_admin()){
+			$this->define_public_hooks();
+		}else{
+			//		$this->define_admin_hooks();
+		}
 
 	}
 
@@ -120,9 +123,9 @@ abstract class WP_Masonry_Grid {
 	 * @param string $name  nome da variável
 	 * @param string $value valor
 	 */
-	private function set($name, $value='')
+	protected function set($name, $value='')
 	{
-		$this->vars[$name] = $value;
+		$this->vars_main[$name] = $value;
 		return $this;
 	}
 
@@ -133,8 +136,8 @@ abstract class WP_Masonry_Grid {
 	 */
 	public function __get($name)
 	{
-		if(!isset($this->vars[$name])) $this->set($name);
-		return  $this->vars[$name];
+		if(!isset($this->vars_main[$name])) $this->set($name);
+		return  $this->vars_main[$name];
 	}
 
 
