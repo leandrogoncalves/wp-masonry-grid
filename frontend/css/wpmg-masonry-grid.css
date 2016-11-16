@@ -76,6 +76,8 @@ section.masonry-item {
 .masonry-collumn{
     display: -webkit-flex;
     display: flex;
+    flex-flow: wrap;
+    flex-direction: row
 }
 
 
@@ -83,15 +85,21 @@ section.masonry-item {
     margin: 0 0.5rem 1rem;
     background:  #efefef;
     overflow: hidden;
-    width: 30%;
-    display: inline-block;
-
+    flex-grow: 1;
+    width: calc(100% * (1/3) - 50px - 1px);
 }
 
+.data-wpmg-cols-1{
+    width: 33%;
+}
+
+.data-wpmg-cols-2{
+    width: 66%;
+}
 
 @media screen and (max-width: 480px){
     .masonry-item{
-        width: 67% !important;
+        /*width: 67% !important;*/
     }
     /*.masonry-wrapper[data-columns]::before {*/
         /*content: '1 .column.size-1of1';*/
@@ -100,7 +108,7 @@ section.masonry-item {
 
 @media screen and (min-width: 481px) and (max-width: 768px) {
     .masonry-item{
-        width: 40% !important;
+        /*width: 40% !important;*/
     }
     /*.masonry-wrapper[data-columns]::before {*/
         /*content: '2 .column.size-1of2';*/
@@ -112,6 +120,8 @@ section.masonry-item {
         /*content: '3 .column.size-1of3';*/
     /*}*/
 }
+
+
 
 .column { float: left; }
 .size-1of1 { width: 100%; }

@@ -245,8 +245,9 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
             $chunk = array_chunk($posts, 3);
 
             foreach ($chunk as $post){
+                $qtd_cols = count($post);
                 ?>
-                <div class="masonry-collumn">
+                <div class="masonry-collumn <?php if($qtd_cols < 3) echo 'data-wpmg-cols-'.$qtd_cols  ?>">
                     <?php
                         foreach ($post as $p){
                             $p['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $p['ID'] ) : '';
