@@ -151,13 +151,13 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
                                     $tax_terms = get_the_terms($vars['ID'], $this->tax );
 
 
-                                    $seguimentos = [];
+                                    $segmentos = [];
                                     if(!empty($tax_terms)){
                                         foreach ($tax_terms as  $tx){
-                                            $seguimentos[] = "<a href='/{$this->page}/{$this->tax}/{$tx->slug}'>{$tx->name}</a>";
+                                            $segmentos[] = "<a href='/{$this->page}/{$this->tax}/{$tx->slug}'>{$tx->name}</a>";
                                         }
                                     }
-                                    $vars['seguimentos'] = implode(' | ',  $seguimentos);
+                                    $vars['segmentos'] = implode(' | ',  $segmentos);
 
                                 }
 

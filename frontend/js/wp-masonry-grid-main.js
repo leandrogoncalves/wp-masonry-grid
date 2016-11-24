@@ -9,7 +9,7 @@ if(jQuery){
 
             removeFilters: function(){
                 $("input[name='wpmg[filter][title]']").val("");
-                $("input[name='wpmg[tax][seguimentos][]']").each(function (i, e) {
+                $("input[name='wpmg[tax][segmentos][]']").each(function (i, e) {
                     $(e).removeAttr('checked');
                 });
                 $("input[name='wpmg[filter][letter]']").removeAttr('checked');
@@ -32,7 +32,7 @@ if(jQuery){
                         url: wpmg_ajax.ajaxurl,
                         type: 'post',
                         data: {
-                            action: 'wpmg_ajax_pagination',
+                            action: '0,',
                             page: $e.data('page'),
                             security: $n.val()
                         },
