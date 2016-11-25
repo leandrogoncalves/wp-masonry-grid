@@ -96,6 +96,7 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
         $this->loop = $this->getResults(['tax'=>$this->tax]);
 
+
         $output = null;
         if ( $this->loop->have_posts() ) {
             switch ($this->mode){
@@ -223,42 +224,29 @@ class WP_Masonry_Grid_Shortcode extends WP_Masonry_Grid{
 
                 }
 
-                if( has_post_thumbnail()) {
-                    ob_start();
-                    the_post_thumbnail( 'medium' );
-                    $post_thumb = ob_get_clean();
-                }
+                $image = "";
+                if (has_post_thumbnail($the_id ) ):
+                    $image = wp_get_attachment_image_src( get_post_thumbnail_id( $the_id ), 'single-post-thumbnail' );
+                    if(isset($image[0])){
+                        $image = $image[0];
+                    }
+                endif;
 
-
-                $posts[] = [
+                $p = [
                     'ID'        => $the_id,
                     'title'     => get_the_title(),
                     'permalink' => get_the_permalink(),
                     'segmentos' => $segmentos,
-                    'thumb'     => $post_thumb
+                    'thumb'     => $image,
                 ];
 
 
+                $p['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $p['ID'] ) : '';
+                echo $this->view->render('frontend/loop_masonry', $p);
+
 
             endwhile;
-
-            $chunk = array_chunk($posts, 3);
-
-            foreach ($chunk as $post){
-                $qtd_cols = count($post);
-                ?>
-                <div class="masonry-collumn <?php if($qtd_cols < 3) echo 'data-wpmg-cols-'.$qtd_cols  ?>">
-                    <?php
-                        foreach ($post as $p){
-                            $p['customFields'] =  $this->acf ? WP_Masonry_Grid_Static::getACFCustomFields($this->acf, $p['ID'] ) : '';
-                            echo $this->view->render('frontend/loop_masonry', $p);
-                        }
                     ?>
-                </div>
-                <?php
-            }
-
-            ?>
         </div>
         <?php
 

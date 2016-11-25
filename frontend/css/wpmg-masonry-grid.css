@@ -73,7 +73,9 @@ section.masonry-item {
    @link http://salvattore.com/
 \*------------------------------*/
 
-.masonry-collumn{
+
+
+.masonry-collumn, .masonry-wrapper{
     display: -webkit-flex;
     display: flex;
     flex-flow: wrap;
@@ -85,8 +87,7 @@ section.masonry-item {
     margin: 0 0.5rem 1rem;
     background:  #efefef;
     overflow: hidden;
-    flex-grow: 1;
-    width: calc(100% * (1/3) - 50px - 1px);
+    width: calc(100% * (1/3) - 17px - 1px);
 }
 
 .data-wpmg-cols-1{
@@ -97,24 +98,37 @@ section.masonry-item {
     width: 66%;
 }
 
-@media screen and (max-width: 480px){
+.img_block{
+    width: 100%;
+    height: 150px;
+    display: block;
+    background-size: cover;
+}
+
+@media screen and (max-width: 520px){
     .masonry-item{
-        /*width: 67% !important;*/
+        width: 99% !important;
+    }
+    .img_block{
+        height: 250px;
     }
     /*.masonry-wrapper[data-columns]::before {*/
         /*content: '1 .column.size-1of1';*/
     /*}*/
 }
 
-@media screen and (min-width: 481px) and (max-width: 768px) {
+@media screen and (min-width: 521px) and (max-width: 900px) {
     .masonry-item{
-        /*width: 40% !important;*/
+        width: 40% !important;
+    }
+    .img_block{
+        height: 200px;
     }
     /*.masonry-wrapper[data-columns]::before {*/
         /*content: '2 .column.size-1of2';*/
     /*}*/
 }
-@media screen and (min-width: 769px) {
+@media screen and (min-width: 900px) {
 
     /*.masonry-wrapper[data-columns]::before {*/
         /*content: '3 .column.size-1of3';*/

@@ -4,7 +4,7 @@ $telefone = $this->customFields[$this->ID]['telefone'];
 ?>
 <div class="masonry-item">
         <a href="<?= $this->permalink ?>" title="<?= $this->title; ?>" class="wpmg_image_featured">
-        <?php echo $this->thumb ?>
+             <span class="img_block" style="background-image: url('<?php echo $this->thumb ?>'); "></span>
         </a>
     <div class="masonry-item-inner">
         <h3><a href="<?= $this->permalink ?>" title="<?= $this->title ?>"><?= $this->title  ?></a></h3>
